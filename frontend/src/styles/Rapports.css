@@ -1,0 +1,582 @@
+/* 🌟 General Page Styling */
+.rapports-container {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #1E1E2F, #2D1B69, #1E3A8A);
+  min-height: 100vh;
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+
+/* 🔹 Logos Section */
+.logos-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 20px 60px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.logo-kpmg, .logo-napta {
+  height: 70px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.logo-kpmg:hover, .logo-napta:hover {
+  transform: scale(1.1) translateY(-2px);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* 🔹 Subtitle */
+.subtitle {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 30px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 📂 Report Selection */
+.report-selection {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.select-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 18px;
+  color: white;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.select-label:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.select-label select {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  outline: none;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.select-label option {
+  background: #1E1E2F;
+  color: white;
+  padding: 10px;
+}
+
+/* 📁 File Upload Section */
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.file-input-label {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 16px 32px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  color: white;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.file-input-label:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 🎯 Upload Button */
+.upload-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.upload-btn:hover {
+  background: linear-gradient(135deg, #218838, #1e7e34);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.3);
+}
+
+/* 🚀 KPI Actions */
+.kpi-actions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* 📊 Load KPIs Button */
+.fetch-btn {
+  background: linear-gradient(135deg, #007BFF, #0056b3);
+  color: white;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fetch-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #004494);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+}
+
+/* 🗑️ Delete KPIs Button */
+.delete-btn {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.delete-btn:hover {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.3);
+}
+
+/* 📊 Chart Grid */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+  padding: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chart-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.chart-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.chart-container h2 {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 📌 KPI Table */
+.kpi-table {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.kpi-table h3 {
+  color: white;
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 16px;
+  color: #E0E0E0;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.kpi-table th {
+  background: linear-gradient(135deg, #2D1B69, #1E3A8A);
+  color: #FFF;
+  text-transform: uppercase;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.kpi-table tr {
+  transition: all 0.3s ease-in-out;
+}
+
+.kpi-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.kpi-table tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.kpi-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+}
+
+.kpi-table tr:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔙 Back Button */
+.back-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 📱 Responsive Design */
+@media screen and (max-width: 768px) {
+  .rapports-container {
+    padding: 20px;
+  }
+
+  .logos-container {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-table {
+    padding: 15px;
+    overflow-x: auto;
+  }
+
+  .kpi-table table {
+    font-size: 14px;
+  }
+
+  .kpi-table th, 
+  .kpi-table td {
+    padding: 12px;
+  }
+
+  .back-btn {
+    position: static;
+    margin-bottom: 20px;
+  }
+}
+
+/* 🔄 Loading States */
+.loading-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+}
+
+.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ❌ Error Message */
+.error-message {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #ff6b6b;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 600px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
+}
+
+/* ✅ Status Message */
+.status-message {
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  color: #28a745;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 600px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.1);
+}
+
+/* 📭 No Data Message */
+.no-data-message {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* 🔒 Disabled States */
+button:disabled,
+select:disabled,
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 📱 Additional Responsive Styles */
+@media screen and (max-width: 768px) {
+  .error-message,
+  .status-message {
+    margin: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .loading-message {
+    font-size: 14px;
+  }
+
+  .no-data-message {
+    font-size: 14px;
+    padding: 20px;
+  }
+}
+
+/* 🎨 Chart Improvements */
+.recharts-wrapper {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.recharts-tooltip-wrapper {
+  background: rgba(30, 30, 47, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.recharts-tooltip-label {
+  color: #fff !important;
+}
+
+.recharts-text {
+  fill: rgba(255, 255, 255, 0.8) !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.1) !important;
+}
+
+.recharts-legend-item-text {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 🎯 Focus States */
+button:focus,
+select:focus,
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+/* 🌟 Hover Effects */
+.chart-container:hover .recharts-wrapper {
+  transform: scale(1.02);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 📊 Chart Container Improvements */
+.chart-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.05), transparent);
+  pointer-events: none;
+}
+
+/* 🎨 Table Improvements */
+.kpi-table table {
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-table table::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.02), transparent);
+  pointer-events: none;
+}
+
+/* 🔄 Smooth Transitions */
+* {
+  transition: background-color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out,
+              box-shadow 0.3s ease-in-out,
+              transform 0.3s ease-in-out;
+}
+.highlighted-kpis {
+  display: flex;
+  gap: 2rem;
+  margin: 20px 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.kpi-box {
+  background-color: #f3f3f3;
+  color: #333;
+  padding: 15px 25px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
