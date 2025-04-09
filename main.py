@@ -286,7 +286,9 @@ async def upload_file(
 
     if report_type != "Rapport de Timesheet":
     # Your existing extract_kpis logic here
-     df["Business Unit"] = df["Business Unit"].str.strip().str.lower()
+     # Make an explicit copy to prevent SettingWithCopyWarning
+     df = df.copy()
+     df.loc[:, "Business Unit"] = df["Business Unit"].str.strip().str.lower()
     user_department = user.departement.strip().lower()
     df_filtered = df[df["Business Unit"] == user_department]
 
@@ -315,6 +317,9 @@ async def upload_file(
 
 def extract_kpis(df, report_type):
     kpis = {}
+    
+    # Make an explicit copy to prevent SettingWithCopyWarning
+    df = df.copy()
 
     if report_type == "Rapport de Finance":
         # ✅ Marge réelle moyenne
@@ -326,7 +331,7 @@ def extract_kpis(df, report_type):
 
         # ✅ Rentabilité par projet (Profitability by Project)
         if all(col in df.columns for col in ["Project ID", "Margin real", "Cost real"]):
-            df["Rentabilité (%)"] = (df["Margin real"] / df["Cost real"]) * 100
+            df.loc[:, "Rentabilité (%)"] = (df["Margin real"] / df["Cost real"]) * 100
             df_rentabilite = df.groupby("Project ID")["Rentabilité (%)"].mean().reset_index()
 
             for _, row in df_rentabilite.iterrows():
@@ -460,16 +465,19 @@ async def upload_skills(
     if not all(col in df.columns for col in required_columns):
         raise HTTPException(status_code=400, detail=f"Le fichier doit contenir les colonnes: {', '.join(required_columns)}")
 
+    # Make an explicit copy to prevent SettingWithCopyWarning
+    df = df.copy()
+    
     # Nettoyage des données
     df = df.fillna("")
-    df["Business unit"] = df["Business unit"].str.strip().str.lower()
-    df["Skill Parent-Category"] = df["Skill Parent-Category"].str.strip()
-    df["Skill Category"] = df["Skill Category"].str.strip()
-    df["Skill"] = df["Skill"].str.strip()
+    df.loc[:, "Business unit"] = df["Business unit"].str.strip().str.lower()
+    df.loc[:, "Skill Parent-Category"] = df["Skill Parent-Category"].str.strip()
+    df.loc[:, "Skill Category"] = df["Skill Category"].str.strip()
+    df.loc[:, "Skill"] = df["Skill"].str.strip()
 
-    df["Grade Value"] = pd.to_numeric(df["Grade Value"], errors='coerce')
-    df["Grade Value"] = df["Grade Value"].fillna(0)
-    df["Grade Value"] = df["Grade Value"].clip(0, 5)
+    df.loc[:, "Grade Value"] = pd.to_numeric(df["Grade Value"], errors='coerce')
+    df.loc[:, "Grade Value"] = df["Grade Value"].fillna(0)
+    df.loc[:, "Grade Value"] = df["Grade Value"].clip(0, 5)
 
     user_department = user.departement.strip().lower()
     df_filtered = df[df["Business unit"] == user_department]
@@ -537,8 +545,11 @@ def get_best_collaborators(user_email: str, db: Session = Depends(get_db)):
         if not all(col in df.columns for col in required_columns):
             return {"message": "Format de fichier invalide.", "best_collaborators": []}
 
+        # Make an explicit copy to prevent SettingWithCopyWarning
+        df = df.copy()
+        
         # Filtrer par département de l'utilisateur
-        df["Business unit"] = df["Business unit"].str.strip().str.lower()
+        df.loc[:, "Business unit"] = df["Business unit"].str.strip().str.lower()
         user_department = user.departement.strip().lower()
         df_filtered = df[df["Business unit"] == user_department]
 

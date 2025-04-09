@@ -109,8 +109,8 @@ function Dashboard() {
       <div className="main-content">
         <div className="header-container">
           <div className="welcome-section text-center py-4">
-            <h1 className="fade-in display-4">
-              Bienvenue, <span className="user-name fw-bold">{user ? `${user.prenom} ${user.nom}` : ""}</span>
+            <h1 className="fade-in display-5">
+              Bienvenue, <span className="display-5 fw-bold">{user ? `${user.prenom} ${user.nom}` : ""}</span>
             </h1>
           </div>
         </div>
@@ -219,37 +219,6 @@ function Dashboard() {
                       <img src={naptaLogo} alt="Napta" className="footer-logo napta-logo" />
                       <span className="logo-tooltip">Visiter Napta</span>
                     </a>
-                  </div>
-                </div>
-                
-                <div className="footer-section">
-                  <h4 className="footer-heading">À Propos</h4>
-                  <div className="about-content">
-                    <div className="company-info">
-                      <p className="about-description">
-                        KPMG est un réseau mondial de services professionnels offrant des services d'audit, fiscaux et de conseil qui opère dans 147 pays et territoires avec plus de 219,000 employés.
-                      </p>
-                      <div className="info-highlight">
-                        <div className="info-item">
-                          <div className="info-icon">
-                            <FaUsers />
-                          </div>
-                          <div className="info-text">Expertise professionnelle</div>
-                        </div>
-                        <div className="info-item">
-                          <div className="info-icon">
-                            <FaLightbulb />
-                          </div>
-                          <div className="info-text">Solutions innovantes</div>
-                        </div>
-                        <div className="info-item">
-                          <div className="info-icon">
-                            <FaChartBar />
-                          </div>
-                          <div className="info-text">Analyses stratégiques</div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

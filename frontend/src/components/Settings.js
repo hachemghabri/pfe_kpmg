@@ -13,7 +13,8 @@ import {
   FaShieldAlt,
   FaInfoCircle,
   FaTrophy,
-  FaAward
+  FaAward,
+  FaPencilAlt
 } from "react-icons/fa";
 import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
@@ -190,6 +191,18 @@ function Settings() {
     }
   };
 
+  const resetForm = () => {
+    // Reset form to current user values
+    setForm({
+      prenom: user?.prenom || "",
+      nom: user?.nom || "",
+      departement: user?.departement || "",
+      poste: user?.poste || "",
+      email: user?.email || "",
+    });
+    setShowPromotionMessage(false);
+  };
+
   return (
     <div className="settings-container">
       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />}
@@ -211,12 +224,25 @@ function Settings() {
             <h2>Informations du Profil</h2>
             {!isEditing && (
               <button className="edit-button" onClick={() => setIsEditing(true)}>
-                Modifier
+                <FaPencilAlt /> Modifier
               </button>
             )}
           </div>
 
           <div className="section-card">
+            {error && (
+              <div className="message-container error">
+                <FaInfoCircle className="message-icon" />
+                <p>{error}</p>
+              </div>
+            )}
+            {success && (
+              <div className={`message-container success ${isPromotion ? 'promotion' : ''}`}>
+                {isPromotion && <FaTrophy className="trophy-icon" />}
+                <p>{success}</p>
+              </div>
+            )}
+            
             {isEditing ? (
               <form onSubmit={handleProfileUpdate} className="settings-form">
                 <div className="form-row">
@@ -261,13 +287,16 @@ function Settings() {
 
                 <div className="form-row">
                   <div className="form-group">
-                    <div className="input-field">
+                    <div className="input-group">
+                      <div className="input-icon">
+                        <FaBuilding />
+                      </div>
                       <input
                         type="text"
-                        value={user?.departement}
+                        name="departement"
+                        value={form.departement}
+                        className="settings-input disabled-input"
                         disabled
-                        className="settings-input"
-                        readOnly
                       />
                     </div>
                     <label>Département</label>
@@ -283,7 +312,7 @@ function Settings() {
                         value={form.poste}
                         onChange={handleChange}
                         required
-                        className="settings-select"
+                        className={`settings-select ${getAvailablePositions(user?.poste).length === 0 ? 'disabled-input' : ''}`}
                         disabled={getAvailablePositions(user?.poste).length === 0}
                       >
                         <option value={user?.poste}>{user?.poste}</option>
@@ -294,11 +323,11 @@ function Settings() {
                         ))}
                       </select>
                       {getAvailablePositions(user?.poste).length === 0 && (
-                        <p className="info-text"><FaInfoCircle /> You've reached the highest position.</p>
+                        <p className="info-text"><FaInfoCircle /> Vous avez atteint le poste le plus élevé.</p>
                       )}
                       {showPromotionMessage && (
                         <p className="success-message promotion-message">
-                          <FaAward /> Congratulations on your promotion!
+                          <FaAward /> Félicitations pour votre promotion!
                         </p>
                       )}
                     </div>
@@ -315,8 +344,8 @@ function Settings() {
                       type="email"
                       name="email"
                       value={form.email}
-                      disabled
                       className="settings-input disabled-input"
+                      disabled
                     />
                   </div>
                   <label>Email</label>
@@ -329,7 +358,7 @@ function Settings() {
                   <button
                     type="button"
                     className="cancel-button"
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => { setIsEditing(false); resetForm(); }}
                   >
                     Annuler
                   </button>
@@ -375,6 +404,9 @@ function Settings() {
                     <div>
                       <label>Poste</label>
                       <p>{user?.poste}</p>
+                      {getAvailablePositions(user?.poste).length === 0 && (
+                        <p className="info-text small-text"><FaInfoCircle /> Vous avez atteint le poste le plus élevé.</p>
+                      )}
                     </div>
                   </div>
                   
@@ -509,20 +541,6 @@ function Settings() {
             )}
           </div>
         </div>
-
-        {error && (
-          <div className="message-container error">
-            <FaInfoCircle className="message-icon" />
-            <p>{error}</p>
-          </div>
-        )}
-        
-        {success && (
-          <div className={`message-container success ${isPromotion ? 'promotion' : ''}`}>
-            {isPromotion && <FaTrophy className="trophy-icon" />}
-            <p>{success}</p>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -79,6 +79,80 @@ const Choix = () => {
     }
   }, [userEmail, userDepartment]);
 
+  // Process grade values to ensure they're numbers
+  const normalizeGradeValue = useCallback((value) => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+      // Handle comma as decimal separator
+      return parseFloat(value.replace(',', '.')) || 0;
+    }
+    return 0;
+  }, []);
+
+  const calculateAverageGrade = (skills) => {
+    if (!skills || skills.length === 0) return 0;
+    
+    console.log("Skills before calculation:", skills);
+    
+    // Filter out any invalid grade values and calculate average
+    const validGrades = skills
+        .map(skill => {
+            // Handle both string and number formats
+            const grade = normalizeGradeValue(skill["Grade Value"]);
+            console.log(`Grade for ${skill["Skill"]}: ${skill["Grade Value"]} → ${grade}`);
+            return grade;
+        })
+        .filter(grade => grade > 0); // Only include positive grades
+    
+    console.log("Valid grades:", validGrades);
+    
+    if (validGrades.length === 0) return 0;
+    
+    const sum = validGrades.reduce((acc, grade) => acc + grade, 0);
+    const average = (sum / validGrades.length).toFixed(1);
+    console.log(`Average grade: ${average}`);
+    return average;
+  };
+
+  // Pre-process collaborator data to normalize grade values
+  const preprocessCollaborators = useCallback((collaborators) => {
+    return collaborators.map(collab => ({
+      ...collab,
+      skills: collab.skills.map(skill => ({
+        ...skill,
+        "Grade Value": normalizeGradeValue(skill["Grade Value"])
+      }))
+    }));
+  }, [normalizeGradeValue]);
+
+  // Modified group function to ensure grade values are normalized
+  const groupCollaboratorsBySkills = useCallback((collaborators) => {
+    const grouped = {};
+    collaborators.forEach(collab => {
+      const key = `${collab["First Name"]} ${collab["Last Name"]}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          "First Name": collab["First Name"],
+          "Last Name": collab["Last Name"],
+          skills: []
+        };
+      }
+      
+      // For each skill, ensure the grade is normalized
+      if (collab.skills) {
+        collab.skills.forEach(skill => {
+          grouped[key].skills.push({
+            "Skill Parent-Category": skill["Skill Parent-Category"],
+            "Skill Category": skill["Skill Category"],
+            "Skill": skill["Skill"],
+            "Grade Value": normalizeGradeValue(skill["Grade Value"])
+          });
+        });
+      }
+    });
+    return Object.values(grouped);
+  }, [normalizeGradeValue]);
+
   useEffect(() => {
     console.log("Main useEffect running");
     if (!userEmail) {
@@ -91,16 +165,25 @@ const Choix = () => {
       try {
         const response = await axios.get(`http://localhost:8000/get_saved_collaborators?user_email=${userEmail}`);
         if (response.data && response.data.collaborators) {
-          setCollaborators(response.data.collaborators);
-          setFilteredCollaborators(response.data.collaborators);
+          console.log("Raw collaborator data:", response.data.collaborators);
+          
+          // Pre-process to normalize grade values
+          const processedCollaborators = preprocessCollaborators(response.data.collaborators);
+          console.log("Processed collaborator data:", processedCollaborators);
+          
+          const groupedCollaborators = groupCollaboratorsBySkills(processedCollaborators);
+          console.log("Grouped collaborator data:", groupedCollaborators);
+          
+          setCollaborators(groupedCollaborators);
+          setFilteredCollaborators(groupedCollaborators);
           
           // Set categories from saved collaborators
-          const categories = [...new Set(response.data.collaborators.flatMap(collab => 
+          const categories = [...new Set(groupedCollaborators.flatMap(collab => 
             collab.skills.map(skill => skill["Skill Parent-Category"])
           ))].filter(Boolean);
           setParentCategories(categories);
           
-          const skillCategories = [...new Set(response.data.collaborators.flatMap(collab => 
+          const skillCategories = [...new Set(groupedCollaborators.flatMap(collab => 
             collab.skills.map(skill => skill["Skill Category"])
           ))].filter(Boolean);
           setSkillCategories(skillCategories);
@@ -116,7 +199,7 @@ const Choix = () => {
     };
 
     fetchSavedCollaborators();
-  }, [userEmail, fetchFeedbacks]); // Added fetchFeedbacks to dependency array
+  }, [userEmail, fetchFeedbacks, preprocessCollaborators, groupCollaboratorsBySkills]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -132,23 +215,6 @@ const Choix = () => {
 
   const toggleSort = () => {
     setSortOrder(prev => prev === "asc" ? "desc" : "asc");
-  };
-
-  const calculateAverageGrade = (skills) => {
-    if (!skills || skills.length === 0) return 0;
-    
-    // Filter out any invalid grade values and calculate average
-    const validGrades = skills
-        .map(skill => {
-            const grade = parseFloat(skill["Grade Value"]);
-            return isNaN(grade) ? 0 : grade;
-        })
-        .filter(grade => grade >= 0 && grade <= 5);
-    
-    if (validGrades.length === 0) return 0;
-    
-    const sum = validGrades.reduce((acc, grade) => acc + grade, 0);
-    return (sum / validGrades.length).toFixed(1);
   };
 
   const handleUpload = async () => {
@@ -180,32 +246,44 @@ const Choix = () => {
         // Immediately fetch and display the collaborators
         const collaboratorsResponse = await axios.get(`http://localhost:8000/get_saved_collaborators?user_email=${userEmail}`);
         if (collaboratorsResponse.data && collaboratorsResponse.data.collaborators) {
-          const groupedCollaborators = groupCollaboratorsBySkills(collaboratorsResponse.data.collaborators);
-          setCollaborators(groupedCollaborators);
-          setFilteredCollaborators(groupedCollaborators);
+          console.log("Raw collaborator data after upload:", collaboratorsResponse.data.collaborators);
           
-          // Set categories from the new collaborators
-          const categories = [...new Set(groupedCollaborators.flatMap(collab => 
-            collab.skills.map(skill => skill["Skill Parent-Category"])
-          ))].filter(Boolean);
-          setParentCategories(categories);
+          // Process collaborators data properly 
+          const processedCollaborators = preprocessCollaborators(collaboratorsResponse.data.collaborators);
+          console.log("Processed collaborator data after upload:", processedCollaborators);
           
-          const skillCategories = [...new Set(groupedCollaborators.flatMap(collab => 
-            collab.skills.map(skill => skill["Skill Category"])
-          ))].filter(Boolean);
-          setSkillCategories(skillCategories);
-
-          // Reset states
-          setSearchTerm("");
-          setSelectedParentCategory("");
-          setSelectedSkillCategory("");
-          setExpandedCollaborators(new Set());
-          setSelectedCollaborator(null);
-          setFeedback("");
-          setFeedbackMessage("");
+          const groupedCollaborators = groupCollaboratorsBySkills(processedCollaborators);
+          console.log("Grouped collaborator data after upload:", groupedCollaborators);
           
-          // Fetch feedbacks for all collaborators
-          fetchFeedbacks();
+          // Force a complete re-rendering by setting state in sequence
+          setCollaborators([]);
+          setTimeout(() => {
+            setCollaborators(groupedCollaborators);
+            setFilteredCollaborators(groupedCollaborators);
+            
+            // Set categories from the new collaborators
+            const categories = [...new Set(groupedCollaborators.flatMap(collab => 
+              collab.skills.map(skill => skill["Skill Parent-Category"])
+            ))].filter(Boolean);
+            setParentCategories(categories);
+            
+            const skillCategories = [...new Set(groupedCollaborators.flatMap(collab => 
+              collab.skills.map(skill => skill["Skill Category"])
+            ))].filter(Boolean);
+            setSkillCategories(skillCategories);
+  
+            // Reset states
+            setSearchTerm("");
+            setSelectedParentCategory("");
+            setSelectedSkillCategory("");
+            setExpandedCollaborators(new Set());
+            setSelectedCollaborator(null);
+            setFeedback("");
+            setFeedbackMessage("");
+            
+            // Fetch feedbacks for all collaborators
+            fetchFeedbacks();
+          }, 100);
         }
       }
     } catch (error) {
@@ -219,27 +297,6 @@ const Choix = () => {
       setLoading(false);
       setLoadingAnimation(false);
     }
-  };
-
-  const groupCollaboratorsBySkills = (collaborators) => {
-    const grouped = {};
-    collaborators.forEach(collab => {
-      const key = `${collab["First Name"]} ${collab["Last Name"]}`;
-      if (!grouped[key]) {
-        grouped[key] = {
-          "First Name": collab["First Name"],
-          "Last Name": collab["Last Name"],
-          skills: []
-        };
-      }
-      grouped[key].skills.push({
-        "Skill Parent-Category": collab["Skill Parent-Category"],
-        "Skill Category": collab["Skill Category"],
-        "Skill": collab["Skill"],
-        "Grade Value": collab["Grade Value"]
-      });
-    });
-    return Object.values(grouped);
   };
 
   const toggleCollaboratorExpansion = (collabKey) => {

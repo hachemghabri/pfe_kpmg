@@ -9,56 +9,45 @@
 
 .register-card {
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 800px;
   overflow: hidden;
   position: relative;
+  padding: 2rem;
 }
 
-.register-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-}
-
-.register-images {
+/* Center logo styling */
+.register-logo-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 2rem;
-  padding: 0 1rem;
-  background: transparent;
 }
 
-.logo-left,
-.logo-right {
-  height: 60px;
+.app-logo-circle {
+  width: 90px;
+  height: 90px;
+  background-color: #4f46e5;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.logo-center {
+  width: 60%;
+  height: auto;
   object-fit: contain;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.logo-left {
-  max-width: 120px;
-}
-
-.logo-right {
-  max-width: 110px;
-}
-
-.logo-left:hover,
-.logo-right:hover {
-  transform: translateY(-3px);
+  filter: brightness(0) invert(1);
 }
 
 .register-content {
-  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .register-title {
@@ -72,7 +61,7 @@
 .register-subtitle {
   color: #64748b;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   font-size: 0.95rem;
 }
 
@@ -80,105 +69,132 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
 }
 
-.form-grid {
+.form-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
+  width: 100%;
 }
 
-.input-group {
-  position: relative;
-  display: block;
-  margin-bottom: 1rem;
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 }
 
-.input-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+.form-field.full-width {
+  grid-column: span 2;
+}
+
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: 500;
   color: #64748b;
-  z-index: 1;
+  margin-left: 0.25rem;
+}
+
+/* Input container style for better ergonomics */
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border-radius: 0.8rem;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  width: 100%;
+  min-height: 48px;
+}
+
+.input-container:focus-within {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Icon box styling */
+.icon-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 44px;
+  height: 44px;
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border-radius: 0.5rem;
+  margin: 0.35rem;
+  flex-shrink: 0;
 }
 
 .register-input {
-  width: 100%;
-  padding: 0.75rem 0.75rem 0.75rem 3rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  flex: 1;
+  padding: 0.9rem 1rem;
+  border: none;
+  background: transparent;
   font-size: 0.95rem;
   color: #1a1a1a;
-  background: #f8fafc;
-  transition: all 0.3s ease;
-}
-
-.register-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  width: 100%;
 }
 
 .register-input::placeholder {
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
-select.register-input {
+/* Special styling for select inputs */
+.select-input {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
+  background-position: right 1rem center;
   background-size: 12px;
-  padding-right: 2rem;
+  padding-right: 2.5rem;
+  cursor: pointer;
 }
 
 .password-toggle {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64748b;
+  margin-right: 0.75rem;
+  color: #9aa2b8;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: color 0.3s ease;
-  z-index: 1;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  flex-shrink: 0;
 }
 
 .password-toggle:hover {
-  color: #3b82f6;
+  color: #4f46e5;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+.register-button {
+  background-color: #4f46e5;
   color: white;
-  padding: 0.875rem;
+  padding: 1rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.8rem;
   font-weight: 500;
   font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  width: 100%;
 }
 
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+.register-button:hover {
+  background-color: #4338ca;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-primary.loading {
+.register-button.loading {
   opacity: 0.8;
   cursor: not-allowed;
 }
@@ -198,24 +214,15 @@ select.register-input {
   }
 }
 
-.btn-icon {
-  transition: transform 0.3s ease;
-}
-
-.btn-primary:hover .btn-icon {
-  transform: translateX(3px);
-}
-
 .error-message {
   background: #fee2e2;
   color: #dc2626;
   padding: 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: 0.8rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  margin-bottom: 1rem;
 }
 
 .error-icon {
@@ -223,25 +230,54 @@ select.register-input {
 }
 
 .register-footer {
-  margin-top: 2rem;
+  margin-top: 1rem;
   text-align: center;
 }
 
 .login-link {
-  color: #3b82f6;
+  color: #4f46e5;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .login-link:hover {
-  color: #2563eb;
+  color: #4338ca;
   text-decoration: underline;
 }
 
+/* Bottom Logos */
+.napta-kpmg-logos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.logo-bottom {
+  height: 30px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.logo-bottom:hover {
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
-  .form-grid {
+  .form-row {
     grid-template-columns: 1fr;
+  }
+  
+  .form-field.full-width {
+    grid-column: span 1;
+  }
+  
+  .register-card {
+    max-width: 450px;
   }
 }
 
@@ -251,18 +287,11 @@ select.register-input {
   }
 
   .register-card {
-    border-radius: 0.75rem;
-  }
-
-  .register-content {
     padding: 1.5rem;
   }
-
-  .register-images {
-    padding: 1.5rem;
-  }
-
-  .logo-left, .logo-right {
-    height: 30px;
+  
+  .app-logo-circle {
+    width: 80px;
+    height: 80px;
   }
 }

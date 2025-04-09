@@ -142,18 +142,25 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .input-icon {
-  position: absolute;
-  left: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  height: 40px;
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 8px;
   color: #4f46e5;
   font-size: 1.1rem;
+  position: static;
 }
 
 .settings-input, .settings-select {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 3rem;
+  padding: 0.75rem 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;

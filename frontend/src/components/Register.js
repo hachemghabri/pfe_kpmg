@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUser, FaLock, FaBuilding, FaBriefcase, FaArrowRight, FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaUser, FaLock, FaBuilding, FaBriefcase, FaEnvelope, FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../styles/Register.css";
 import kpmgLogo from "../assets/kpmga.png";
 import naptaLogo from "../assets/naptar.png";
@@ -14,7 +14,7 @@ function Register() {
     nom: "",
     prenom: "",
     departement: "",
-    poste: "Assistant Manager",
+    poste: "Assistant Manager 1",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -71,13 +71,10 @@ function Register() {
   return (
     <section className="register-container">
       <div className="register-card">
-        <div className="register-images">
-          <a href="https://kpmg.com/tn/fr/home.html" target="_blank" rel="noopener noreferrer">
-            <img src={kpmgLogo} alt="KPMG Logo" className="logo-left" />
-          </a>
-          <a href="https://www.napta.io/en" target="_blank" rel="noopener noreferrer">
-            <img src={naptaLogo} alt="Napta Logo" className="logo-right" />
-          </a>
+        <div className="register-logo-container">
+          <div className="app-logo-circle">
+            <img src={kpmgLogo} alt="KPMG Logo" className="logo-center" />
+          </div>
         </div>
 
         <div className="register-content">
@@ -92,140 +89,172 @@ function Register() {
           )}
 
           <form onSubmit={handleSubmit} className="register-form">
-            <div className="form-grid">
-              <div className="input-group">
-                <div className="input-icon">
-                  <FaUser />
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="prenom">Prénom</label>
+                <div className="input-container">
+                  <div className="icon-box">
+                    <FaUser />
+                  </div>
+                  <input 
+                    type="text" 
+                    id="prenom"
+                    name="prenom" 
+                    placeholder="Prénom" 
+                    value={form.prenom}
+                    onChange={handleChange} 
+                    required 
+                    className="register-input"
+                  />
                 </div>
-                <input 
-                  type="text" 
-                  name="prenom" 
-                  placeholder="Prénom" 
-                  value={form.prenom}
-                  onChange={handleChange} 
-                  required 
-                  className="register-input"
-                />
               </div>
 
-              <div className="input-group">
-                <div className="input-icon">
-                  <FaUser />
+              <div className="form-field">
+                <label htmlFor="nom">Nom</label>
+                <div className="input-container">
+                  <div className="icon-box">
+                    <FaUser />
+                  </div>
+                  <input 
+                    type="text" 
+                    id="nom"
+                    name="nom" 
+                    placeholder="Nom" 
+                    value={form.nom}
+                    onChange={handleChange} 
+                    required 
+                    className="register-input"
+                  />
                 </div>
-                <input 
-                  type="text" 
-                  name="nom" 
-                  placeholder="Nom" 
-                  value={form.nom}
-                  onChange={handleChange} 
-                  required 
-                  className="register-input"
-                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="departement">Département</label>
+                <div className="input-container">
+                  <div className="icon-box">
+                    <FaBuilding />
+                  </div>
+                  <select 
+                    id="departement"
+                    name="departement" 
+                    value={form.departement}
+                    onChange={handleChange} 
+                    required
+                    className="register-input select-input"
+                  >
+                    <option value="">Sélectionnez un département</option>
+                    <option value="Audit">Audit</option>
+                    <option value="Audit IFRS">Audit IFRS</option>
+                    <option value="Strategy & Deal Advisory">Strategy & Deal Advisory</option>
+                    <option value="IT Risk">IT Risk</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Tax">Tax</option>
+                    <option value="Tax Compliance">Tax Compliance</option>
+                    <option value="Tax Payroll">Tax Payroll</option>
+                    <option value="TMC">TMC</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Finance">Finance</option>
+                    <option value="RM">RM</option>
+                    <option value="RH">RH</option>
+                    <option value="Management Consulting">Management Consulting</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="input-group">
-                <div className="input-icon">
-                  <FaBuilding />
+              <div className="form-field">
+                <label htmlFor="poste">Poste</label>
+                <div className="input-container">
+                  <div className="icon-box">
+                    <FaBriefcase />
+                  </div>
+                  <select 
+                    id="poste"
+                    name="poste" 
+                    value={form.poste}
+                    onChange={handleChange}
+                    required
+                    className="register-input select-input"
+                  >
+                    <option value="Assistant Manager 1">Assistant Manager 1</option>
+                    <option value="Assistant Manager 2">Assistant Manager 2</option>
+                    <option value="Manager 1">Manager 1</option>
+                    <option value="Manager 2">Manager 2</option>
+                    <option value="Manager 3">Manager 3</option>
+                    <option value="Senior Manager 1">Senior Manager 1</option>
+                    <option value="Senior Manager 2">Senior Manager 2</option>
+                    <option value="Senior Manager 3">Senior Manager 3</option>
+                    <option value="Senior Manager 4">Senior Manager 4</option>
+                    <option value="Director 1">Director 1</option>
+                    <option value="Director 2">Director 2</option>
+                    <option value="Partner">Partner</option>
+                  </select>
                 </div>
-                <select 
-                  name="departement" 
-                  value={form.departement}
-                  onChange={handleChange} 
-                  required
-                  className="register-input"
-                >
-                  <option value="">Sélectionnez un département</option>
-                  <option value="Audit">Audit</option>
-                  <option value="Audit IFRS">Audit IFRS</option>
-                  <option value="Strategy & Deal Advisory">Strategy & Deal Advisory</option>
-                  <option value="IT Risk">IT Risk</option>
-                  <option value="Technology">Technology</option>
-                  <option value="Tax">Tax</option>
-                  <option value="Tax Compliance">Tax Compliance</option>
-                  <option value="Tax Payroll">Tax Payroll</option>
-                  <option value="TMC">TMC</option>
-                  <option value="Legal">Legal</option>
-                  <option value="Finance">Finance</option>
-                  <option value="RM">RM</option>
-                  <option value="RH">RH</option>
-                  <option value="Management Consulting">Management Consulting</option>
-                </select>
               </div>
+            </div>
 
-              <div className="input-group">
-                <div className="input-icon">
-                  <FaBriefcase />
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="email">Email</label>
+                <div className="input-container">
+                  <div className="icon-box">
+                    <FaEnvelope />
+                  </div>
+                  <input 
+                    type="email" 
+                    id="email"
+                    name="email" 
+                    placeholder="exemple@kpmg.com" 
+                    value={form.email}
+                    onChange={handleChange} 
+                    required 
+                    autoComplete="email"
+                    className="register-input"
+                  />
                 </div>
-                <select 
-                  name="poste" 
-                  value={form.poste}
-                  onChange={handleChange}
-                  required
-                  className="register-input"
-                >
-                  <option value="Assistant Manager 1">Assistant Manager 1</option>
-                  <option value="Assistant Manager 2">Assistant Manager 2</option>
-                  <option value="Manager 1">Manager 1</option>
-                  <option value="Manager 2">Manager 2</option>
-                  <option value="Manager 3">Manager 3</option>
-                  <option value="Senior Manager 1">Senior Manager 1</option>
-                  <option value="Senior Manager 2">Senior Manager 2</option>
-                  <option value="Senior Manager 3">Senior Manager 3</option>
-                  <option value="Senior Manager 4">Senior Manager 4</option>
-                  <option value="Director 1">Director 1</option>
-                  <option value="Director 2">Director 2</option>
-                  <option value="Partner">Partner</option>
-                </select>
               </div>
-
-              <div className="input-group">
-                <div className="input-icon">
-                  <FaUser />
+              
+              <div className="form-field">
+                <label htmlFor="password">Mot de passe</label>
+                <div className="input-container">
+                  <div className="icon-box">
+                    <FaLock />
+                  </div>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    id="password"
+                    name="password" 
+                    placeholder="••••••••••" 
+                    value={form.password}
+                    onChange={handleChange} 
+                    required 
+                    autoComplete="new-password"
+                    className="register-input"
+                  />
+                  <button 
+                    type="button" 
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
                 </div>
-                <input 
-                  type="email" 
-                  name="email" 
-                  placeholder="Email" 
-                  value={form.email}
-                  onChange={handleChange} 
-                  required 
-                  autoComplete="email"
-                  className="register-input"
-                />
               </div>
+            </div>
 
-              <div className="input-group">
-                <div className="input-icon">
-                  <FaLock />
-                </div>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  name="password" 
-                  placeholder="Mot de passe" 
-                  value={form.password}
-                  onChange={handleChange} 
-                  required 
-                  autoComplete="new-password"
-                  className="register-input"
-                />
-                <button 
-                  type="button" 
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
-
-              <div className="input-group">
-                <div className="input-icon">
+            <div className="form-field full-width">
+              <label htmlFor="confirmPassword">Confirmer mot de passe</label>
+              <div className="input-container">
+                <div className="icon-box">
                   <FaLock />
                 </div>
                 <input 
                   type={showConfirmPassword ? "text" : "password"} 
+                  id="confirmPassword"
                   name="confirmPassword" 
-                  placeholder="Confirmer mot de passe" 
+                  placeholder="••••••••••" 
                   value={form.confirmPassword}
                   onChange={handleChange} 
                   required 
@@ -247,16 +276,13 @@ function Register() {
 
             <button 
               type="submit" 
-              className={`btn-primary ${isLoading ? 'loading' : ''}`}
+              className="register-button"
               disabled={isLoading}
             >
               {isLoading ? (
                 <span className="loading-spinner"></span>
               ) : (
-                <>
-                  S'inscrire
-                  <FaArrowRight className="btn-icon" />
-                </>
+                "S'inscrire"
               )}
             </button>
           </form>
@@ -265,6 +291,21 @@ function Register() {
             <p className="text-center">
               <a href="/" className="login-link">Déjà un compte? Connectez-vous</a>
             </p>
+          </div>
+          
+          <div className="napta-kpmg-logos">
+            <img
+              src={kpmgLogo}
+              alt="KPMG Logo"
+              className="logo-bottom"
+              onClick={() => window.open("https://kpmg.com/tn/fr/home.html", "_blank")}
+            />
+            <img
+              src={naptaLogo}
+              alt="Napta Logo"
+              className="logo-bottom"
+              onClick={() => window.open("https://www.napta.io/en", "_blank")}
+            />
           </div>
         </div>
       </div>

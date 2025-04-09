@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaEye, FaEyeSlash, FaUser, FaLock, FaArrowRight, FaExclamationCircle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaExclamationCircle } from "react-icons/fa";
 import "../styles/Login.css";
 import kpmgLogo from "../assets/kpmga.png";
 import naptaLogo from "../assets/naptar.png";
@@ -53,25 +53,17 @@ function Login() {
   return (
     <section className="login-container">
       <div className="login-card">
-        <div className="login-images">
-          <img
-            src={kpmgLogo}
-            alt="KPMG Logo"
-            className="logo-left"
-            onClick={() => window.open("https://kpmg.com/tn/fr/home.html", "_blank")}
-          />
-          <img
-            src={naptaLogo}
-            alt="Napta Logo"
-            className="logo-right"
-            onClick={() => window.open("https://www.napta.io/en", "_blank")}
-          />
+        <div className="login-logo-container">
+          <div className="app-logo-circle">
+            <img
+              src={kpmgLogo}
+              alt="KPMG Logo"
+              className="logo-center"
+            />
+          </div>
         </div>
 
         <div className="login-content">
-          <h3 className="login-title">Bienvenue</h3>
-          <p className="login-subtitle">Connectez-vous pour accéder à votre espace</p>
-
           {error && (
             <div className="error-message">
               <FaExclamationCircle className="error-icon" />
@@ -80,69 +72,80 @@ function Login() {
           )}
 
           <form onSubmit={handleSubmit} className="login-form">
-            <div className="input-group">
-              <div className="input-icon">
-                <FaUser />
+            <div className="form-field">
+              <label htmlFor="email">Email Address</label>
+              <div className="input-container">
+                <div className="icon-box">
+                  <FaEnvelope />
+                </div>
+                <input 
+                  type="email" 
+                  id="email"
+                  name="email" 
+                  value={form.email}
+                  onChange={handleChange} 
+                  required 
+                  className="login-input"
+                  autoComplete="email"
+                />
               </div>
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="Adresse email" 
-                value={form.email}
-                onChange={handleChange} 
-                required 
-                className="login-input"
-                autoComplete="email"
-              />
             </div>
             
-            <div className="input-group">
-              <div className="input-icon">
-                <FaLock />
+            <div className="form-field">
+              <label htmlFor="password">Password</label>
+              <div className="input-container">
+                <div className="icon-box">
+                  <FaLock />
+                </div>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  id="password"
+                  name="password" 
+                  value={form.password}
+                  onChange={handleChange} 
+                  required 
+                  className="login-input"
+                  autoComplete="current-password"
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle"
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
               </div>
-              <input 
-                type={showPassword ? "text" : "password"} 
-                name="password" 
-                placeholder="Mot de passe" 
-                value={form.password}
-                onChange={handleChange} 
-                required 
-                className="login-input"
-                autoComplete="current-password"
-              />
-              <button 
-                type="button" 
-                className="password-toggle"
-                onClick={togglePasswordVisibility}
-                aria-label={showPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
             </div>
 
             <button 
               type="submit" 
-              className={`btn-primary ${isLoading ? 'loading' : ''}`}
+              className={`login-button ${isLoading ? 'loading' : ''}`}
               disabled={isLoading}
             >
               {isLoading ? (
                 <span className="loading-spinner"></span>
-              ) : (
-                <>
-                  Se connecter
-                  <FaArrowRight className="btn-icon" />
-                </>
-              )}
+              ) : "Login"}
             </button>
           </form>
 
-          <div className="login-footer">
-            <p className="register-text">
-              Vous n'avez pas de compte?
-              <a href="/register" className="register-link">
-                Inscrivez-vous
-              </a>
-            </p>
+          <div className="login-links">
+            <a href="/register" className="signup-link">Créer un compte</a>
+          </div>
+
+          <div className="napta-kpmg-logos">
+            <img
+              src={kpmgLogo}
+              alt="KPMG Logo"
+              className="logo-bottom kpmg-logo"
+              onClick={() => window.open("https://kpmg.com/tn/fr/home.html", "_blank")}
+            />
+            <img
+              src={naptaLogo}
+              alt="Napta Logo"
+              className="logo-bottom"
+              onClick={() => window.open("https://www.napta.io/en", "_blank")}
+            />
           </div>
         </div>
       </div>
