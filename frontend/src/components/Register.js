@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUser, FaLock, FaBuilding, FaBriefcase, FaArrowRight, FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 import "../styles/Register.css";
-import imagef from "../assets/kpmglogo.png";
-import imagen from "../assets/napta.png";
+import kpmgLogo from "../assets/kpmga.png";
+import naptaLogo from "../assets/naptar.png";
 
 function Register() {
   const [form, setForm] = useState({
@@ -73,10 +73,10 @@ function Register() {
       <div className="register-card">
         <div className="register-images">
           <a href="https://kpmg.com/tn/fr/home.html" target="_blank" rel="noopener noreferrer">
-            <img src={imagef} alt="KPMG Logo" className="logo-left" />
+            <img src={kpmgLogo} alt="KPMG Logo" className="logo-left" />
           </a>
           <a href="https://www.napta.io/en" target="_blank" rel="noopener noreferrer">
-            <img src={imagen} alt="Napta Logo" className="logo-right" />
+            <img src={naptaLogo} alt="Napta Logo" className="logo-right" />
           </a>
         </div>
 

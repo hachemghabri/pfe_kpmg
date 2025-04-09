@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaEye, FaEyeSlash, FaUser, FaLock, FaArrowRight, FaExclamationCircle } from "react-icons/fa";
 import "../styles/Login.css";
-import imagef from "../assets/kpmglogo.png";
-import imagen from "../assets/napta.png";
+import kpmgLogo from "../assets/kpmga.png";
+import naptaLogo from "../assets/naptar.png";
 
 function Login() {
   const [form, setForm] = useState({
@@ -55,13 +55,13 @@ function Login() {
       <div className="login-card">
         <div className="login-images">
           <img
-            src={imagef}
+            src={kpmgLogo}
             alt="KPMG Logo"
             className="logo-left"
             onClick={() => window.open("https://kpmg.com/tn/fr/home.html", "_blank")}
           />
           <img
-            src={imagen}
+            src={naptaLogo}
             alt="Napta Logo"
             className="logo-right"
             onClick={() => window.open("https://www.napta.io/en", "_blank")}

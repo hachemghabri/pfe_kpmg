@@ -654,4 +654,357 @@
 
 .main-content::-webkit-scrollbar-thumb:hover {
   background: #a5b4fc;
+}
+
+/* Enhanced Modern Footer Styles */
+.dashboard-footer {
+  position: relative;
+  margin-top: 60px;
+  background: linear-gradient(to right, #ffffff, #f1f5f9);
+  border-top: none;
+  width: 100%;
+  overflow: hidden;
+}
+
+.footer-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.footer-content-container {
+  padding: 30px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer-heading {
+  position: relative;
+  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.footer-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5 0%, #818cf8 100%);
+  border-radius: 3px;
+}
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.footer-logo-link {
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-logo-link:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15);
+}
+
+.logo-tooltip {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: #1e293b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.logo-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent #1e293b transparent;
+}
+
+.footer-logo-link:hover .logo-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+.footer-logo {
+  height: 40px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.kpmg-logo {
+  height: 30px;
+}
+
+.napta-logo {
+  height: 30px;
+}
+
+.footer-logo-link:hover .footer-logo {
+  transform: scale(1.1);
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.footer-quick-link {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-left: 20px;
+  display: block;
+  width: fit-content;
+}
+
+.footer-quick-link::before {
+  content: '➤';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.8rem;
+  color: #4f46e5;
+  transition: transform 0.3s ease;
+}
+
+.footer-quick-link:hover {
+  color: #4f46e5;
+  transform: translateX(5px);
+}
+
+.footer-quick-link:hover::before {
+  transform: translateX(3px);
+}
+
+.footer-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(203, 213, 225, 0.8), transparent);
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-copyright p, 
+.footer-version p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.footer-version p {
+  background: rgba(79, 70, 229, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .footer-section {
+    width: 100%;
+  }
+  
+  .footer-logos {
+    justify-content: flex-start;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Services Section Styles */
+.footer-services {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.service-item:hover {
+  transform: translateX(8px);
+  box-shadow: 0 5px 15px rgba(79, 70, 229, 0.15);
+  background: linear-gradient(to right, white, #f5f7ff);
+}
+
+.service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.service-item:hover .service-icon {
+  background: rgba(79, 70, 229, 0.2);
+  transform: scale(1.1);
+}
+
+.service-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-link {
+  text-decoration: none;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.service-item:hover .service-link {
+  color: #4f46e5;
+}
+
+.service-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .service-item {
+    width: 100%;
+  }
+}
+
+/* About Section Styles */
+.about-content {
+  background: linear-gradient(to right, #ffffff, #f8f9fd);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.about-description {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed rgba(203, 213, 225, 0.5);
+}
+
+.info-highlight {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.info-text {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .about-content {
+    padding: 15px;
+  }
+  
+  .info-highlight {
+    gap: 12px;
+  }
 } 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -19,6 +19,18 @@ class User(Base):
     reports = relationship("ReportFile", back_populates="user", cascade="all, delete-orphan")
     skills = relationship("CollaboratorSkill", back_populates="user", cascade="all, delete-orphan")
     projects = relationship("Project", back_populates="user", cascade="all, delete-orphan")
+    feedbacks = relationship("CollaboratorFeedback", back_populates="user", cascade="all, delete-orphan")
+
+class CollaboratorFeedback(Base):
+    __tablename__ = "collaborator_feedbacks"
+    id = Column(Integer, primary_key=True, index=True)
+    collaborator_name = Column(String(255), nullable=False)
+    feedback = Column(Text, nullable=False)
+    department = Column(String(255), nullable=False)
+    created_by = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="feedbacks")
 
 class Project(Base):
     __tablename__ = "projects"

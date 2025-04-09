@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi.middleware.cors import CORSMiddleware
 from database import get_db
-from models import User, ReportFile, KPI, CollaboratorSkill,PendingTimesheet, Project, Collaborateur
+from models import User, ReportFile, KPI, CollaboratorSkill,PendingTimesheet, Project, Collaborateur, CollaboratorFeedback
 from pydantic import BaseModel
 import os
 import pandas as pd
@@ -264,8 +264,7 @@ async def upload_file(
                 date_uploaded=datetime.utcnow()
             )
             db.add(pending_entry)
-        
-        # Calculate approval rate
+                    # ✅ Calcul du taux d'approbation
         total_users = len(pending_timesheets)
         approved_users = df["Approved by"].notnull().sum()
         approval_rate = (approved_users / total_users) * 100 if total_users > 0 else 0.0
@@ -279,22 +278,25 @@ async def upload_file(
             date_created=datetime.utcnow()
         )
         db.add(kpi_approval)
+
+   
+        
+
         db.commit()
 
-    # Existing KPI extraction logic here (for other report types)
     if report_type != "Rapport de Timesheet":
-        # Your existing extract_kpis logic here
-        df["Business Unit"] = df["Business Unit"].str.strip().str.lower()
-        user_department = user.departement.strip().lower()
-        df_filtered = df[df["Business Unit"] == user_department]
+    # Your existing extract_kpis logic here
+     df["Business Unit"] = df["Business Unit"].str.strip().str.lower()
+    user_department = user.departement.strip().lower()
+    df_filtered = df[df["Business Unit"] == user_department]
 
-        if df_filtered.empty:
-            raise HTTPException(status_code=400, detail="Aucune donnée trouvée pour votre département.")
+    if df_filtered.empty:
+        raise HTTPException(status_code=400, detail="Aucune donnée trouvée pour votre département.")
 
-        kpis = extract_kpis(df_filtered, report_type)
+    kpis = extract_kpis(df_filtered, report_type)
 
     for metric_name, metric_value in kpis.items():
-        if metric_value != 0.0: 
+        if metric_value != 0.0:
             kpi_entry = KPI(
                 report_id=new_report.id,
                 department=user.departement,
@@ -305,6 +307,7 @@ async def upload_file(
             )
             db.add(kpi_entry)
     db.commit()
+
 
     return {"message": "Fichier téléchargé et traité avec succès."}
 
@@ -449,38 +452,40 @@ async def upload_skills(
 
     df = pd.read_excel(file_path)
 
-    required_columns = ["First Name", "Last Name", "Business unit", "Skill Parent-Category", "Skill Category", "Skill", "Grade Value"]
+    required_columns = [
+        "First Name", "Last Name", "Business unit", 
+        "Skill Parent-Category", "Skill Category", 
+        "Skill", "Grade Value"
+    ]
     if not all(col in df.columns for col in required_columns):
         raise HTTPException(status_code=400, detail=f"Le fichier doit contenir les colonnes: {', '.join(required_columns)}")
 
-    # Clean and validate data
-    df = df.fillna("")  # Replace NaN with empty string for text fields
+    # Nettoyage des données
+    df = df.fillna("")
     df["Business unit"] = df["Business unit"].str.strip().str.lower()
     df["Skill Parent-Category"] = df["Skill Parent-Category"].str.strip()
     df["Skill Category"] = df["Skill Category"].str.strip()
     df["Skill"] = df["Skill"].str.strip()
-    
-    # Handle Grade Value - ensure it's numeric and between 0 and 5
+
     df["Grade Value"] = pd.to_numeric(df["Grade Value"], errors='coerce')
-    df["Grade Value"] = df["Grade Value"].fillna(0)  # Replace NaN with 0
-    df["Grade Value"] = df["Grade Value"].clip(0, 5)  # Ensure values are between 0 and 5
-    
+    df["Grade Value"] = df["Grade Value"].fillna(0)
+    df["Grade Value"] = df["Grade Value"].clip(0, 5)
+
     user_department = user.departement.strip().lower()
     df_filtered = df[df["Business unit"] == user_department]
 
     if df_filtered.empty:
         raise HTTPException(status_code=400, detail="Aucun collaborateur trouvé pour votre département.")
 
-    # Clear existing skills uploaded by the user before adding new ones
+    # Suppression des anciennes compétences uploadées
     db.query(CollaboratorSkill).filter(CollaboratorSkill.uploaded_by == user.id).delete()
 
-    # Add collaborator skills to database
+    # Ajout des nouvelles compétences
     for _, row in df_filtered.iterrows():
-        # Ensure grade_value is a valid float
         grade_value = float(row["Grade Value"])
         if pd.isna(grade_value):
             grade_value = 0.0
-            
+
         skill_entry = CollaboratorSkill(
             first_name=row["First Name"].strip(),
             last_name=row["Last Name"].strip(),
@@ -502,28 +507,37 @@ async def upload_skills(
         raise HTTPException(status_code=500, detail=f"Erreur lors de la sauvegarde des données: {str(e)}")
 
 
+
 @app.get("/best_collaborators")
 def get_best_collaborators(user_email: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_email).first()
     if not user:
         raise HTTPException(status_code=400, detail="Utilisateur non trouvé.")
 
-    # Find the latest uploaded skills file
     try:
+        # Lister les fichiers Excel dans le dossier uploads
         files = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith(".xlsx")]
         if not files:
             return {"message": "Aucun fichier de compétences trouvé.", "best_collaborators": []}
 
-        latest_file = max([os.path.join(UPLOAD_FOLDER, f) for f in files], key=os.path.getctime)
+        # Récupérer le fichier le plus récent
+        latest_file = max(
+            [os.path.join(UPLOAD_FOLDER, f) for f in files],
+            key=os.path.getctime
+        )
 
-        # Read the latest Excel file
+        # Lire le fichier Excel
         df = pd.read_excel(latest_file)
 
-        required_columns = ["First Name", "Last Name", "Business unit", "Skill Parent-Category", "Skill Category", "Skill", "Grade Value"]
+        required_columns = [
+            "First Name", "Last Name", "Business unit", 
+            "Skill Parent-Category", "Skill Category", 
+            "Skill", "Grade Value"
+        ]
         if not all(col in df.columns for col in required_columns):
             return {"message": "Format de fichier invalide.", "best_collaborators": []}
 
-        # Filter by user's department
+        # Filtrer par département de l'utilisateur
         df["Business unit"] = df["Business unit"].str.strip().str.lower()
         user_department = user.departement.strip().lower()
         df_filtered = df[df["Business unit"] == user_department]
@@ -531,19 +545,24 @@ def get_best_collaborators(user_email: str, db: Session = Depends(get_db)):
         if df_filtered.empty:
             return {"message": "Aucun collaborateur trouvé pour votre département.", "best_collaborators": []}
 
-        # Get best collaborator per skill category
+        # Trouver le meilleur collaborateur par catégorie de compétence
         best_collaborators = (
-            df_filtered.loc[df_filtered.groupby(["Skill Parent-Category", "Skill Category"])["Grade Value"].idxmax()]
+            df_filtered.loc[
+                df_filtered.groupby(["Skill Parent-Category", "Skill Category"])["Grade Value"].idxmax()
+            ]
             .sort_values(by="Grade Value", ascending=False)
         )
 
-        result = best_collaborators[["First Name", "Last Name", "Skill Parent-Category", "Skill Category", "Skill", "Grade Value"]].to_dict(orient="records")
+        result = best_collaborators[
+            ["First Name", "Last Name", "Skill Parent-Category", "Skill Category", "Skill", "Grade Value"]
+        ].to_dict(orient="records")
+
         return {"message": "Liste des meilleurs collaborateurs par compétence.", "best_collaborators": result}
 
     except Exception as e:
-        print(f"Error in get_best_collaborators: {str(e)}")  # For debugging
+        print(f"Error in get_best_collaborators: {str(e)}")  # Pour débogage
         return {"message": "Erreur lors de la lecture du fichier.", "best_collaborators": []}
-    
+
 
 @app.get("/get_saved_collaborators")
 def get_saved_collaborators(user_email: str, db: Session = Depends(get_db)):
@@ -729,7 +748,6 @@ def delete_project(project_id: int, user_email: str, db: Session = Depends(get_d
     db.delete(project)
     db.commit()
     return {"message": "Project deleted successfully"}
-
 # Add these new model classes after the existing model classes
 class UserProfileUpdate(BaseModel):
     email: str
@@ -791,6 +809,58 @@ def change_password(password_data: PasswordChange, db: Session = Depends(get_db)
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erreur lors du changement de mot de passe: {str(e)}")
+
+class FeedbackSchema(BaseModel):
+    collaborator_name: str
+    feedback: str
+    user_email: str
+    department: str
+
+@app.post("/add_feedback")
+def add_feedback(feedback: FeedbackSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == feedback.user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    new_feedback = CollaboratorFeedback(
+        collaborator_name=feedback.collaborator_name,
+        feedback=feedback.feedback,
+        department=feedback.department,
+        created_by=user.id
+    )
+    
+    db.add(new_feedback)
+    db.commit()
+    db.refresh(new_feedback)
+    
+    return {"status": "success", "message": "Feedback added successfully"}
+
+@app.get("/get_feedbacks")
+def get_feedbacks(user_email: str, department: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    feedbacks = db.query(CollaboratorFeedback).filter(
+        CollaboratorFeedback.department == department
+    ).all()
+    
+    result = []
+    for feedback in feedbacks:
+        feedback_user = db.query(User).filter(User.id == feedback.created_by).first()
+        result.append({
+            "collaborator_name": feedback.collaborator_name,
+            "feedback": feedback.feedback,
+            "created_by": f"{feedback_user.prenom} {feedback_user.nom}",
+            "created_at": feedback.created_at.isoformat()
+        })
+    
+    return result
+
+
+
+
+
 
 
 

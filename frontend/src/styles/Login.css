@@ -29,27 +29,36 @@
   background: linear-gradient(90deg, #4f46e5, #7c3aed);
 }
 
-/* Logo container */
+/* Login images container */
 .login-images {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+  background: transparent;
 }
 
 /* Logo styling */
 .logo-left,
 .logo-right {
-  height: 40px;
+  height: 60px;
   object-fit: contain;
-  transition: transform 0.3s ease;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logo-left {
+  max-width: 120px;
+}
+
+.logo-right {
+  max-width: 110px;
 }
 
 .logo-left:hover,
 .logo-right:hover {
-  transform: scale(1.05);
+  transform: translateY(-3px);
 }
 
 /* Login Content */

@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import "../styles/Dashboard.css";
 import analysisImg from "../assets/data-analysis.webp";
 import staffingImg from "../assets/staff.webp";
+import kpmgLogo from "../assets/kpmga.png";
+import naptaLogo from "../assets/naptar.png";
 
 function Dashboard() {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -110,7 +112,6 @@ function Dashboard() {
             <h1 className="fade-in display-4">
               Bienvenue, <span className="user-name fw-bold">{user ? `${user.prenom} ${user.nom}` : ""}</span>
             </h1>
-            <p className="welcome-subtitle text-muted">Votre tableau de bord personnel</p>
           </div>
         </div>
 
@@ -195,6 +196,77 @@ function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Footer with KPMG and Napta logos - Enhanced modern design */}
+        <footer className="dashboard-footer">
+          <div className="footer-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120">
+              <path fill="#f8fafc" fillOpacity="1" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path>
+            </svg>
+          </div>
+          
+          <div className="footer-content-container">
+            <div className="footer-content">
+              <div className="footer-top">
+                <div className="footer-section footer-logos-section">
+                  <h4 className="footer-heading">Nos Partenaires</h4>
+                  <div className="footer-logos">
+                    <a href="https://kpmg.com/tn/fr/home.html" target="_blank" rel="noopener noreferrer" className="footer-logo-link">
+                      <img src={kpmgLogo} alt="KPMG" className="footer-logo kpmg-logo" />
+                      <span className="logo-tooltip">Visiter KPMG</span>
+                    </a>
+                    <a href="https://www.napta.io/en" target="_blank" rel="noopener noreferrer" className="footer-logo-link">
+                      <img src={naptaLogo} alt="Napta" className="footer-logo napta-logo" />
+                      <span className="logo-tooltip">Visiter Napta</span>
+                    </a>
+                  </div>
+                </div>
+                
+                <div className="footer-section">
+                  <h4 className="footer-heading">À Propos</h4>
+                  <div className="about-content">
+                    <div className="company-info">
+                      <p className="about-description">
+                        KPMG est un réseau mondial de services professionnels offrant des services d'audit, fiscaux et de conseil qui opère dans 147 pays et territoires avec plus de 219,000 employés.
+                      </p>
+                      <div className="info-highlight">
+                        <div className="info-item">
+                          <div className="info-icon">
+                            <FaUsers />
+                          </div>
+                          <div className="info-text">Expertise professionnelle</div>
+                        </div>
+                        <div className="info-item">
+                          <div className="info-icon">
+                            <FaLightbulb />
+                          </div>
+                          <div className="info-text">Solutions innovantes</div>
+                        </div>
+                        <div className="info-item">
+                          <div className="info-icon">
+                            <FaChartBar />
+                          </div>
+                          <div className="info-text">Analyses stratégiques</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="footer-divider"></div>
+              
+              <div className="footer-bottom">
+                <div className="footer-copyright">
+                  <p>&copy; {new Date().getFullYear()} - Tableau de bord KPMG | Tous droits réservés</p>
+                </div>
+                <div className="footer-version">
+                  <p>Version 1.0.0</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
