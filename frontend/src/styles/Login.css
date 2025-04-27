@@ -1,63 +1,60 @@
 /* Background */
 .login-container {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 1rem;
 }
 
 /* Card with Modern Light Design */
 .login-card {
   background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 90%;
+  max-width: 500px;
   overflow: hidden;
-  position: relative;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Center logo styling */
 .login-logo-container {
+  padding: 2rem 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #00338d 0%, #005eb8 100%);
 }
 
 .app-logo-circle {
-  width: 110px;
-  height: 110px;
-  background-color: #4f46e5;
+  width: 90px;
+  height: 90px;
+  background: white;
   border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 0.5rem;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .logo-center {
-  width: 70%;
+  width: 70px;
   height: auto;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 /* Login Content */
 .login-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  padding: 1.5rem 2rem;
 }
 
 /* Form Styling */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  margin-top: 1rem;
 }
 
 .form-field {
@@ -73,16 +70,43 @@
   margin-left: 0.25rem;
 }
 
-/* New input container style for better ergonomics */
-.input-container {
-  position: relative;
+/* Icon box styling */
+.login-card .icon-box {
   display: flex;
   align-items: center;
-  background-color: #f8fafc;
-  border-radius: 0.8rem;
-  border: 1px solid #e2e8f0;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+  padding: 0.4rem;
+  color: #666;
+  width: 32px;
+  height: 32px;
+}
+
+/* Custom Input Fields */
+.login-card .login-input {
+  flex: 1;
+  border: none;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+  outline: none;
+  width: 100%;
+  height: 32px;
+}
+
+.login-input::placeholder {
+  color: #cbd5e1;
+}
+
+/* New input container style for better ergonomics */
+.login-card .input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s;
+  height: 34px;
 }
 
 .input-container:focus-within {
@@ -90,44 +114,15 @@
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-/* Icon box styling */
-.icon-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 44px;
-  height: 44px;
-  background-color: #eef2ff;
-  color: #4f46e5;
-  border-radius: 0.5rem;
-  margin: 0.35rem;
-}
-
-/* Custom Input Fields */
-.login-input {
-  flex: 1;
-  padding: 0.9rem 1rem;
-  border: none;
-  background: transparent;
-  font-size: 0.95rem;
-  color: #1a1a1a;
-  outline: none;
-}
-
-.login-input::placeholder {
-  color: #cbd5e1;
-}
-
 /* Password Toggle Button */
-.password-toggle {
-  margin-right: 0.75rem;
-  color: #9aa2b8;
-  background: transparent;
+.login-card .password-toggle {
+  background: none;
   border: none;
+  color: #666;
   cursor: pointer;
-  transition: color 0.3s ease;
-  font-size: 0.9rem;
-  padding: 0.5rem;
+  padding: 0 0.5rem;
+  font-size: 0.8rem;
+  height: 32px;
 }
 
 .password-toggle:hover {
@@ -135,121 +130,106 @@
 }
 
 /* Login Button Styling */
-.login-button {
-  background-color: #4f46e5;
-  color: white;
-  padding: 0.9rem;
-  border: none;
-  border-radius: 0.8rem;
-  font-weight: 500;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.login-card .login-button {
   margin-top: 1rem;
+  background: linear-gradient(135deg, #00338d 0%, #005eb8 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
 }
 
 .login-button:hover {
-  background-color: #4338ca;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  background: linear-gradient(135deg, #00297a 0%, #004c9e 100%);
 }
 
-.login-button.loading {
-  opacity: 0.8;
+.login-button.loading, .login-button:disabled {
+  background: #ccc;
   cursor: not-allowed;
 }
 
 .loading-spinner {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s ease-in-out infinite;
 }
 
 /* Login Footer Links */
 .login-links {
   display: flex;
   justify-content: center;
-  padding: 0 0.5rem;
   margin-top: 1.5rem;
 }
 
 .signup-link {
-  color: #4f46e5;
+  color: #00338d;
   text-decoration: none;
-  font-size: 1rem;
   font-weight: 500;
-  transition: color 0.3s ease;
+  font-size: 0.95rem;
 }
 
 .signup-link:hover {
-  color: #4338ca;
   text-decoration: underline;
 }
 
 /* Bottom Logos */
 .napta-kpmg-logos {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
+  gap: 2rem;
   margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #f1f5f9;
 }
 
 .logo-bottom {
   height: 30px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
   cursor: pointer;
-}
-
-.kpmg-logo {
-  height: 40px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
 .logo-bottom:hover {
-  transform: translateY(-2px);
+  opacity: 1;
 }
 
 .error-message {
-  background: #fee2e2;
-  color: #dc2626;
+  background-color: #fff2f2;
+  border-left: 4px solid #f53d3d;
+  color: #e60000;
   padding: 0.75rem;
-  border-radius: 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   font-size: 0.9rem;
 }
 
 .error-icon {
-  font-size: 1rem;
+  margin-right: 0.5rem;
 }
 
 /* Animations */
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
-@media (max-width: 480px) {
-  .login-container {
-    padding: 1rem;
-  }
-
+@media (max-width: 600px) {
   .login-card {
-    padding: 1.5rem;
+    width: 95%;
   }
   
-  .app-logo-circle {
-    width: 90px;
-    height: 90px;
+  .login-content {
+    padding: 1.25rem;
   }
 }

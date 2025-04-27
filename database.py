@@ -1,6 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DATABASE_URL = "postgresql://postgres:hach@localhost/kpmg"
 

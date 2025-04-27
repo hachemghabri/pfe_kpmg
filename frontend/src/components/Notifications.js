@@ -16,10 +16,13 @@ import {
   FaPaperPlane,
   FaClock,
   FaTimes,
-  FaUser
+  FaUser,
+  FaComment,
+  FaCheck
 } from "react-icons/fa";
 import "../styles/Notifications.css";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 function Notifications() {
   const [collaborateurs, setCollaborateurs] = useState([]);
@@ -30,14 +33,23 @@ function Notifications() {
   const [sendingReminders, setSendingReminders] = useState({});
   const [sentToAll, setSentToAll] = useState(false);
   const [filterDepartment, setFilterDepartment] = useState("all");
+  const [feedbackNotifications, setFeedbackNotifications] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(true);
   const navigate = useNavigate();
+
+  // Get current user info
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userEmail = user ? user.email : null;
 
   // Get unique departments for filtering
   const departments = ['all', ...new Set(collaborateurs.map(collab => collab.department))].filter(Boolean);
 
+  // Fetch Timesheet data
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const userEmail = user ? user.email : null;
+    if (!userEmail) {
+      setLoading(false);
+      return;
+    }
   
     axios.get(`http://localhost:8000/pending_timesheets?user_email=${userEmail}`)
       .then(response => {
@@ -49,13 +61,59 @@ function Notifications() {
           lastActive: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 7).toISOString(), // Mock data
           daysOverdue: Math.floor(Math.random() * 10) + 1 // Mock data for demo
         })));
-        setLoading(false);
       })
       .catch(error => {
-        console.error("Erreur lors de la récupération des collaborateurs :", error);
+        console.error("Erreur lors de la récupération des collaborateurs pour timesheet:", error);
+      })
+      .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [userEmail]);
+      
+  // Fetch Feedback Notifications
+  useEffect(() => {
+    const fetchAndMarkNotifications = async () => {
+      if (!userEmail) {
+        setLoadingNotifications(false);
+        return;
+      }
+      
+      setLoadingNotifications(true);
+      try {
+        console.log("[Notifications] Fetching notifications for user:", userEmail);
+        const response = await axios.get(`http://localhost:8000/notifications?user_email=${userEmail}`);
+        console.log("[Notifications] Raw response:", response.data);
+        
+        if (response.data && Array.isArray(response.data)) {
+          // Filter for only feedback notifications
+          const feedbacks = response.data.filter(notif => notif.type === 'feedback');
+          console.log("[Notifications] Setting feedback notifications:", feedbacks);
+          setFeedbackNotifications(feedbacks);
+          
+          // If notifications were fetched, mark them as read on the backend
+          if (feedbacks.length > 0) {
+            try {
+              console.log("[Notifications] Marking all notifications as read for user:", userEmail);
+              await axios.put(`http://localhost:8000/mark_all_notifications_read?user_email=${userEmail}`);
+              console.log("[Notifications] Successfully marked notifications as read.");
+            } catch (markError) {
+              console.error("[Notifications] Error marking notifications as read:", markError);
+            }
+          }
+        } else {
+          console.log("[Notifications] No notification data received or invalid format.");
+          setFeedbackNotifications([]); // Ensure it's an empty array
+        }
+      } catch (fetchError) {
+        console.error("[Notifications] Erreur lors de la récupération des notifications:", fetchError);
+        setFeedbackNotifications([]); // Clear on error
+      } finally {
+        setLoadingNotifications(false);
+      }
+    };
+    
+    fetchAndMarkNotifications();
+  }, [userEmail]); // Rerun when userEmail changes
   
 
   // Filter and sort collaborators
@@ -81,11 +139,25 @@ function Notifications() {
   const sendReminder = (email) => {
     setSendingReminders(prev => ({ ...prev, [email]: true }));
     
-    // Simulate API call
-    setTimeout(() => {
+    // Call the actual API endpoint
+    axios.post('http://localhost:8000/send_timesheet_reminder', null, {
+      params: {
+        user_email: userEmail,
+        collaborator_email: email
+      }
+    })
+    .then(response => {
+      console.log("Reminder sent successfully:", response.data);
+      // Remove the collaborator from the list after successful reminder
       setCollaborateurs(collaborateurs.filter((collab) => collab.email !== email));
+    })
+    .catch(error => {
+      console.error("Error sending reminder:", error);
+      alert("Erreur lors de l'envoi du rappel. Veuillez réessayer.");
+    })
+    .finally(() => {
       setSendingReminders(prev => ({ ...prev, [email]: false }));
-    }, 1500);
+    });
   };
 
   // ✅ Envoyer un rappel à tous les collaborateurs
@@ -94,13 +166,26 @@ function Notifications() {
     
     setSentToAll(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    // Call the actual API endpoint
+    axios.post('http://localhost:8000/send_timesheet_reminder_all', null, {
+      params: {
+        user_email: userEmail
+      }
+    })
+    .then(response => {
+      console.log("Reminders sent to all successfully:", response.data);
+      // Remove all collaborators after successful reminders
       setCollaborateurs(collaborateurs.filter(collab => 
         !filteredAndSortedCollaborateurs.some(filtered => filtered.id === collab.id)
       ));
+    })
+    .catch(error => {
+      console.error("Error sending reminders to all:", error);
+      alert("Erreur lors de l'envoi des rappels. Veuillez réessayer.");
+    })
+    .finally(() => {
       setSentToAll(false);
-    }, 2000);
+    });
   };
 
   // Toggle sort order
@@ -136,6 +221,19 @@ function Notifications() {
     if (daysOverdue <= 7) return "status-warning";
     return "status-danger";
   };
+  
+  // Mark a notification as read
+  const dismissNotification = async (notificationId) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.email) return;
+    
+    try {
+      await axios.put(`http://localhost:8000/mark_notification_read/${notificationId}?user_email=${user.email}`);
+      setFeedbackNotifications(prev => prev.filter(n => n.id !== notificationId));
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
 
   return (
     <div className="notifications-container">
@@ -148,6 +246,65 @@ function Notifications() {
         <h2 className="notifications-title">
           <FaBell className="header-icon" /> Gestion des Notifications
         </h2>
+      </div>
+      
+      {/* Feedback Notifications Section */}
+      <div className="feedback-section-container">
+        {loadingNotifications ? (
+          <div className="loading-notifications">
+            <div className="spinner"></div>
+            <p>Chargement des notifications...</p>
+        </div>
+        ) : feedbackNotifications.length > 0 ? (
+          <div className="feedback-notifications-section">
+            <div className="feedback-notifications-header">
+              <FaComment className="feedback-icon" />
+              <h3 className="feedback-title">Nouveaux Feedbacks</h3>
+        </div>
+
+            <div className="feedback-cards">
+              {feedbackNotifications.map((notification) => (
+                <div key={notification.id} className="feedback-notification-card">
+                  <div className="notification-content">
+                    <div className="notification-avatar">
+                      {notification.created_by.split(' ').map(name => name[0]).join('')}
+                    </div>
+                    <div className="notification-details">
+                      <p className="notification-message">
+                        {notification.message}
+                      </p>
+                      <div className="notification-time">
+                        <FaClock className="time-icon" />
+                        <span>{formatDate(notification.created_at)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="notification-actions">
+                    <Link to="/choix" className="view-button">
+                      <FaComment className="view-icon" />
+                      <span>Voir les feedbacks</span>
+                    </Link>
+                    <button 
+                      className="dismiss-button"
+                      onClick={() => dismissNotification(notification.id)}
+                      title="Marquer comme lu"
+                    >
+                      <FaCheck />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="no-feedback-notifications">
+            <div className="empty-state-icon">
+              <FaComment />
+            </div>
+            <h3>Aucune notification de feedback</h3>
+            <p>Vous n'avez pas de nouvelles notifications de feedback pour le moment.</p>
+          </div>
+        )}
       </div>
 
       {/* Main Content Area */}
@@ -205,15 +362,15 @@ function Notifications() {
             <div className="filter-content">
               {/* Search Box */}
               <div className="search-container">
-                <div className="search-box">
-                  <FaSearch className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder="Rechercher par nom ou département..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
-                  />
+          <div className="search-box">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Rechercher par nom ou département..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
                   {searchTerm && (
                     <button className="clear-search" onClick={() => setSearchTerm("")}>
                       <FaTimes />
@@ -239,26 +396,26 @@ function Notifications() {
                     ))}
                   </select>
                 </div>
-              </div>
+          </div>
 
               {/* Sort Controls */}
               <div className="sort-controls">
                 <div className="sort-group">
                   <label className="sort-label">Trier par</label>
-                  <div className="sort-options">
-                    <button 
-                      className={`sort-btn ${sortBy === "name" ? "active" : ""}`}
-                      onClick={() => setSortBy("name")}
-                    >
+          <div className="sort-options">
+            <button 
+              className={`sort-btn ${sortBy === "name" ? "active" : ""}`}
+              onClick={() => setSortBy("name")}
+            >
                       <FaUser className="sort-icon" /> Nom
-                    </button>
-                    <button 
-                      className={`sort-btn ${sortBy === "department" ? "active" : ""}`}
-                      onClick={() => setSortBy("department")}
-                    >
+            </button>
+            <button 
+              className={`sort-btn ${sortBy === "department" ? "active" : ""}`}
+              onClick={() => setSortBy("department")}
+            >
                       <FaBuilding className="sort-icon" /> Département
-                    </button>
-                    <button 
+            </button>
+            <button 
                       className={`sort-btn ${sortBy === "overdue" ? "active" : ""}`}
                       onClick={() => setSortBy("overdue")}
                     >
@@ -269,12 +426,12 @@ function Notifications() {
                 
                 <button 
                   className="order-btn"
-                  onClick={toggleSortOrder}
+              onClick={toggleSortOrder}
                   title={sortOrder === "asc" ? "Ordre croissant" : "Ordre décroissant"}
-                >
+            >
                   <FaSort className={`order-icon ${sortOrder === "desc" ? "desc" : ""}`} />
                   <span>{sortOrder === "asc" ? "A-Z" : "Z-A"}</span>
-                </button>
+            </button>
               </div>
             </div>
           </div>
@@ -310,15 +467,15 @@ function Notifications() {
             </div>
                   
             <div className="panel-content">
-              {loading ? (
+          {loading ? (
                 <div className="loading-state">
                   <div className="spinner"></div>
                   <p>Chargement des notifications...</p>
                 </div>
-              ) : filteredAndSortedCollaborateurs.length > 0 ? (
+          ) : filteredAndSortedCollaborateurs.length > 0 ? (
                 <div className="collaborators-grid">
-                  {filteredAndSortedCollaborateurs.map((collab) => (
-                    <div key={collab.id} className="notification-card">
+              {filteredAndSortedCollaborateurs.map((collab) => (
+                <div key={collab.id} className="notification-card">
                       <div className="notification-status">
                         <div className={`status-indicator ${getStatusClass(collab.daysOverdue)}`}></div>
                       </div>
@@ -347,19 +504,19 @@ function Notifications() {
                           <div className="message-header">
                             <FaExclamationTriangle className="warning-icon" />
                             <span className="message-title">Timesheet non rempli</span>
-                          </div>
+                    </div>
                           <p className="message-detail">
                             En retard de <span className="overdue-days">{collab.daysOverdue} jour{collab.daysOverdue > 1 ? 's' : ''}</span>
                           </p>
-                        </div>
+                  </div>
                         
                         <div className="notification-actions">
-                          <button 
+                  <button 
                             className={`send-reminder-btn ${sendingReminders[collab.email] ? 'sending' : ''}`}
-                            onClick={() => sendReminder(collab.email)}
+                    onClick={() => sendReminder(collab.email)}
                             disabled={sendingReminders[collab.email]}
-                            data-email={collab.email}
-                          >
+                    data-email={collab.email}
+                  >
                             {sendingReminders[collab.email] ? (
                               <FaCheckCircle className="success-icon" />
                             ) : (
@@ -368,16 +525,16 @@ function Notifications() {
                             <span>
                               {sendingReminders[collab.email] ? 'Envoyé' : 'Envoyer un rappel'}
                             </span>
-                          </button>
+                  </button>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="no-notifications">
+          ) : (
+            <div className="no-notifications">
                   <div className="success-illustration">
-                    <FaCheckCircle className="success-icon" />
+              <FaCheckCircle className="success-icon" />
                   </div>
                   <h3 className="success-title">Tous les collaborateurs ont rempli leur timesheet</h3>
                   <p className="success-message">Vous êtes à jour avec les notifications</p>
@@ -392,3 +549,13 @@ function Notifications() {
 }
 
 export default Notifications;
+
+
+
+
+
+
+
+
+
+

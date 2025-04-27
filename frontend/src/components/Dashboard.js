@@ -6,10 +6,11 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "../styles/Dashboard.css";
-import analysisImg from "../assets/data-analysis.webp";
-import staffingImg from "../assets/staff.webp";
+import analysisImg from "../assets/anal.jpg";
+import staffingImg from "../assets/gestion.jpg";
 import kpmgLogo from "../assets/kpmga.png";
 import naptaLogo from "../assets/naptar.png";
+import axios from "axios";
 
 function Dashboard() {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -17,6 +18,7 @@ function Dashboard() {
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState('home');
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -25,6 +27,31 @@ function Dashboard() {
     }
   }, []);
 
+  // Fetch notifications from the server
+  useEffect(() => {
+    if (!user || !user.email) return;
+    
+    const fetchNotifications = async () => {
+      try {
+        console.log("Fetching notifications in Dashboard for user:", user.email);
+        const response = await axios.get(`http://localhost:8000/notifications?user_email=${user.email}`);
+        console.log("Dashboard notifications response:", response.data);
+        
+        if (response.data && Array.isArray(response.data)) {
+          setNotificationCount(response.data.length);
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+    
+    fetchNotifications();
+    
+    // Poll for new notifications every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   const handleLogout = () => {
     if (window.confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
       localStorage.removeItem("user");
@@ -32,8 +59,16 @@ function Dashboard() {
     }
   };
 
-  const handleSectionClick = (section) => {
+  const handleSectionClick = async (section) => {
     setActiveSection(section);
+    
+    // If clicking on notifications, navigate to the page.
+    // Reading the notifications will be handled by the Notifications component itself.
+    if (section === 'notifications') {
+      navigate("/notifications");
+      // Reset the local count immediately for better UX, actual marking happens on Notifications page load
+      setNotificationCount(0); 
+    }
   };
 
   return (
@@ -81,10 +116,18 @@ function Dashboard() {
             </Link>
           </li>
           <li className={`nav-item ${activeSection === 'notifications' ? 'active' : ''}`}>
-            <Link to="/notifications" className="nav-link" onClick={() => handleSectionClick('notifications')}>
-              <FaBell /> {isSidebarOpen && <span>Notifications</span>}
+            <div 
+              className="nav-link" 
+              onClick={() => handleSectionClick('notifications')}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="nav-icon-container">
+                <FaBell />
+                {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
+              </div>
+              {isSidebarOpen && <span>Notifications</span>}
               {isSidebarOpen && <FaChevronRight className="nav-arrow" />}
-            </Link>
+            </div>
           </li>
           <li className={`nav-item ${activeSection === 'reports' ? 'active' : ''}`}>
             <Link to="/rapports" className="nav-link" onClick={() => handleSectionClick('reports')}>

@@ -1,232 +1,171 @@
 .register-container {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 1rem;
 }
 
 .register-card {
   background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 90%;
   max-width: 800px;
   overflow: hidden;
-  position: relative;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Center logo styling */
 .register-logo-container {
+  padding: 1.5rem 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #00338d 0%, #005eb8 100%);
 }
 
 .app-logo-circle {
-  width: 90px;
-  height: 90px;
-  background-color: #4f46e5;
+  width: 80px;
+  height: 80px;
+  background: white;
   border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 0.5rem;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logo-center {
-  width: 60%;
+  width: 60px;
   height: auto;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 .register-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  padding: 1.5rem 2rem;
 }
 
 .register-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: 1.5rem;
+  color: #333;
   margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .register-subtitle {
-  color: #64748b;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.5rem;
   text-align: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
 }
 
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
+  gap: 1rem;
 }
 
 .form-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-  width: 100%;
+  display: flex;
+  gap: A1rem;
+  flex-wrap: wrap;
 }
 
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
+  flex: 1;
+  min-width: 250px;
+  margin-bottom: 0.75rem;
 }
 
-.form-field.full-width {
-  grid-column: span 2;
+.full-width {
+  flex-basis: 100%;
 }
 
-.form-field label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #64748b;
-  margin-left: 0.25rem;
-}
-
-/* Input container style for better ergonomics */
 .input-container {
-  position: relative;
   display: flex;
   align-items: center;
-  background-color: #f8fafc;
-  border-radius: 0.8rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   overflow: hidden;
-  transition: all 0.3s ease;
-  width: 100%;
-  min-height: 48px;
+  margin-top: 0.25rem;
+  transition: border-color 0.2s;
 }
 
-.input-container:focus-within {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-/* Icon box styling */
 .icon-box {
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-width: 44px;
-  height: 44px;
-  background-color: #eef2ff;
-  color: #4f46e5;
-  border-radius: 0.5rem;
-  margin: 0.35rem;
-  flex-shrink: 0;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+  padding: 0.5rem;
+  color: #666;
+  width: 36px;
+  height: 36px;
 }
 
 .register-input {
   flex: 1;
-  padding: 0.9rem 1rem;
   border: none;
-  background: transparent;
-  font-size: 0.95rem;
-  color: #1a1a1a;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
   outline: none;
   width: 100%;
 }
 
-.register-input::placeholder {
-  color: #cbd5e1;
-}
-
-/* Special styling for select inputs */
 .select-input {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 12px;
-  padding-right: 2.5rem;
-  cursor: pointer;
+  background-position: right 0.7rem center;
+  background-size: 1em;
 }
 
 .password-toggle {
-  margin-right: 0.75rem;
-  color: #9aa2b8;
-  background: transparent;
+  background: none;
   border: none;
+  color: #666;
   cursor: pointer;
-  transition: color 0.3s ease;
+  padding: 0 0.75rem;
   font-size: 0.9rem;
-  padding: 0.5rem;
-  flex-shrink: 0;
-}
-
-.password-toggle:hover {
-  color: #4f46e5;
 }
 
 .register-button {
-  background-color: #4f46e5;
+  margin-top: 1rem;
+  background: linear-gradient(135deg, #00338d 0%, #005eb8 100%);
   color: white;
-  padding: 1rem;
   border: none;
-  border-radius: 0.8rem;
-  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.75rem;
   font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1.5rem;
-  width: 100%;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .register-button:hover {
-  background-color: #4338ca;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  background: linear-gradient(135deg, #00297a 0%, #004c9e 100%);
 }
 
-.register-button.loading {
-  opacity: 0.8;
+.register-button:disabled {
+  background: #ccc;
   cursor: not-allowed;
 }
 
 .loading-spinner {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.error-message {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 0.75rem;
-  border-radius: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.error-icon {
-  font-size: 1rem;
+  to { transform: rotate(360deg); }
 }
 
 .register-footer {
@@ -235,63 +174,83 @@
 }
 
 .login-link {
-  color: #4f46e5;
+  color: #00338d;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .login-link:hover {
-  color: #4338ca;
   text-decoration: underline;
+}
+
+.error-message {
+  background-color: #fff2f2;
+  border-left: 4px solid #f53d3d;
+  color: #e60000;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.error-icon {
+  margin-right: 0.5rem;
 }
 
 /* Bottom Logos */
 .napta-kpmg-logos {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #f1f5f9;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .logo-bottom {
   height: 30px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
   cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
 .logo-bottom:hover {
-  transform: translateY(-2px);
+  opacity: 1;
 }
 
+/* Responsiveness */
 @media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .form-field.full-width {
-    grid-column: span 1;
-  }
-  
   .register-card {
-    max-width: 450px;
+    width: 95%;
+  }
+  
+  .form-field {
+    flex-basis: 100%;
+  }
+  
+  .register-content {
+    padding: 1.25rem;
   }
 }
 
-@media (max-width: 480px) {
-  .register-container {
-    padding: 1rem;
-  }
-
+@media (min-width: 992px) {
   .register-card {
-    padding: 1.5rem;
+    flex-direction: row;
+    max-width: 900px;
   }
   
-  .app-logo-circle {
-    width: 80px;
-    height: 80px;
+  .register-logo-container {
+    width: 30%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .register-content {
+    width: 70%;
+    padding: 2rem;
   }
 }
+

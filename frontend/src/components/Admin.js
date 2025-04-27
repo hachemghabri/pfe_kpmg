@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   FaUserShield, FaUsers, FaTrash, FaKey, FaSignOutAlt, FaBars, FaUserPlus,
-  FaChartLine, FaSearch, FaFilter, FaUserCog
+  FaChartLine, FaSearch, FaFilter
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Admin.css";
-import logo from "../assets/kpmglogo.png";
-import naptaLogo from "../assets/napta.png";
+import logo from "../assets/kpmga.png";
+import naptaLogo from "../assets/naptar.png";
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -204,9 +204,6 @@ function AdminDashboard() {
           </li>
           <li className="nav-item active">
             <FaUserShield /> {isSidebarOpen && <span>Gérer les utilisateurs</span>}
-          </li>
-          <li className="nav-item">
-            <FaUserCog /> {isSidebarOpen && <span>Paramètres</span>}
           </li>
           <li className="logout" onClick={handleLogout}>
             <FaSignOutAlt /> {isSidebarOpen && <span>Déconnexion</span>}

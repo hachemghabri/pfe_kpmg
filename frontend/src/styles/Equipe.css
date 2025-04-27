@@ -190,12 +190,14 @@
   background-color: #f8fafc;
   border-radius: 8px;
   padding: 16px;
+  padding-bottom: 20px;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: visible !important;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px);
 }
 
 .stat-icon {
@@ -239,6 +241,35 @@
 .stat-label {
   font-size: 0.9rem;
   color: #64748b;
+  position: relative;
+  height: 25px;
+  margin-top: 5px;
+  overflow: visible;
+}
+
+.stat-label .hover-label {
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+
+.stat-card:hover .stat-label .hover-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.stat-card:hover .stat-value {
+  transform: scale(1.1);
+  color: #4299e1;
 }
 
 /* Create Project Panel */
@@ -715,10 +746,10 @@
 }
 
 .collab-name {
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: 1rem;
   font-weight: 600;
   color: #334155;
-  margin: 0;
 }
 
 .collab-grade {
@@ -732,27 +763,120 @@
   margin-top: 4px;
 }
 
+.collab-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
 .delete-collab-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  background-color: #f87171;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .delete-collab-btn:hover {
-  background-color: #fee2e2;
-  color: #ef4444;
+  background-color: #f44336;
+  transform: scale(1.05);
+}
+
+/* Edit Collaborator Button */
+.edit-collab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 8px;
+}
+
+.edit-collab-btn:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+/* Edit Form Styles */
+.edit-form {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.edit-form-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #334155;
+}
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.edit-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.save-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-edit-btn:hover {
+  background-color: #059669;
+  transform: translateY(-2px);
+}
+
+.cancel-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-edit-btn:hover {
+  background-color: #e2e8f0;
+  transform: translateY(-2px);
 }
 
 .collab-ratings {
@@ -796,6 +920,22 @@
   transition: width 0.5s ease;
 }
 
+.unrated-bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  padding-left: 12px;
+}
+
+.unrated-bar .rating-value {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
 .respect-bar {
   background-color: #10b981;
 }
@@ -811,6 +951,21 @@
 .rating-value {
   position: relative;
   z-index: 2;
+  white-space: nowrap;
+  padding: 0 8px;
+  font-size: 0.85rem;
+  color: white;
+  text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+}
+
+.rating-bar:empty .rating-value,
+.rating-bar[style*="width: 0"] .rating-value {
+  color: #64748b;
+  text-shadow: none;
+  position: absolute;
+  left: 8px;
+  font-style: italic;
+  font-size: 0.8rem;
 }
 
 .collab-footer {
@@ -913,13 +1068,18 @@
   }
   
   .form-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .edit-form-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 768px) {
   .equipe-header {
-    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
   }
   
   .main-area {
@@ -927,6 +1087,10 @@
   }
   
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .edit-form-grid {
     grid-template-columns: 1fr;
   }
   
@@ -939,7 +1103,7 @@
   }
   
   .equipe-title {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
   }
   
   .back-btn span {
@@ -953,7 +1117,314 @@
   .filter-controls {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+  }
+  
+  .edit-form-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .save-edit-btn, 
+  .cancel-edit-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
+/* Improved project status alert */
+.project-status-alert {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background-color: rgba(255, 248, 230, 0.6);
+  border: 1px solid #ffd582;
+  border-left: 4px solid #ffa000;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.status-icon-container {
+  margin-right: 15px;
+  padding-top: 3px;
+}
+
+.project-status-alert .status-icon {
+  color: #ffa000;
+  font-size: 20px;
+}
+
+.status-content {
+  flex: 1;
+}
+
+.status-title {
+  color: #885800;
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.status-message {
+  color: #5d4200;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Pending evaluation style */
+.score-pending {
+  color: #888;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.no-ratings-message {
+  padding: 15px;
+  text-align: center;
+  color: #888;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.no-ratings-message p {
+  margin: 5px 0;
+}
+
+.no-ratings-message p:first-child {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.collaborator-card .collab-footer .final-rating {
+  position: relative;
+  padding: 10px 15px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(to right, #f5f7fa, #e4e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styles for the project assignment button and modal */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.add-to-project-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.add-to-project-btn:hover {
+  background-color: #3182ce;
+  transform: translateY(-2px);
+}
+
+.project-btn {
+  background-color: #4299e1;
+  color: white;
+}
+
+.project-btn:hover {
+  background-color: #3182ce;
+}
+
+.project-assignment-modal {
+  width: 90%;
+  max-width: 550px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-assignment-modal .modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.collaborator-selection-section, 
+.project-selection-section {
+  margin-bottom: 20px;
+}
+
+.collaborators-list-container,
+.projects-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.modal-collaborators-list,
+.modal-projects-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.collaborator-list-item,
+.project-list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.collaborator-list-item:last-child,
+.project-list-item:last-child {
+  border-bottom: none;
+}
+
+.collaborator-list-item:hover,
+.project-list-item:hover {
+  background-color: #f7fafc;
+}
+
+.project-list-item.selected {
+  background-color: #ebf8ff;
+  border-left: 3px solid #4299e1;
+}
+
+.collaborator-list-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.project-list-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #4299e1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.project-list-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-list-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.project-list-date {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 4px;
+}
+
+.assignment-message {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.assignment-message.success {
+  background-color: #c6f6d5;
+  color: #22543d;
+}
+
+.assignment-message.error {
+  background-color: #fed7d7;
+  color: #9b2c2c;
+}
+
+/* Adjust card actions for multiple buttons */
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #f1f5f9;
+  justify-content: space-between;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.feedback-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.feedback-btn:hover {
+  background-color: #059669;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .add-to-project-btn,
+  .add-new-feedback-btn {
+    width: 100%;
+  }
+  
+  .card-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
+  
+  .project-assignment-modal {
+    width: 95%;
+  }
+}

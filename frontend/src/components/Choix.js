@@ -41,6 +41,23 @@ const Choix = () => {
   const [loadingAnimation, setLoadingAnimation] = useState(false);
   const [feedbacks, setFeedbacks] = useState({}); // Store feedbacks by collaborator name
   const [feedbacksLoading, setFeedbacksLoading] = useState(false);
+  // New state for new collaborator modal
+  const [showNewCollaboratorModal, setShowNewCollaboratorModal] = useState(false);
+  const [newCollaborator, setNewCollaborator] = useState({
+    firstName: "",
+    lastName: "",
+    grade: ""
+  });
+  // New state for saved collaborators list
+  const [savedCollaborators, setSavedCollaborators] = useState([]);
+  const [selectedExistingCollaborator, setSelectedExistingCollaborator] = useState(null);
+  // Add new state variables for project assignment functionality
+  const [showAddToProjectModal, setShowAddToProjectModal] = useState(false);
+  const [selectedCollaboratorForProject, setSelectedCollaboratorForProject] = useState(null);
+  const [activeProjects, setActiveProjects] = useState([]);
+  const [selectedProjectForAssignment, setSelectedProjectForAssignment] = useState(null);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [assignmentMessage, setAssignmentMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -61,12 +78,33 @@ const Choix = () => {
       if (response.data && Array.isArray(response.data)) {
         // Group feedbacks by collaborator name
         const feedbacksByCollaborator = {};
+        const uniqueCollaborators = new Set();
+        
         response.data.forEach(fb => {
           if (!feedbacksByCollaborator[fb.collaborator_name]) {
             feedbacksByCollaborator[fb.collaborator_name] = [];
+            uniqueCollaborators.add(fb.collaborator_name);
           }
           feedbacksByCollaborator[fb.collaborator_name].push(fb);
         });
+        
+        // Create array of unique collaborator names
+        const collaboratorsArray = Array.from(uniqueCollaborators).map(name => {
+          const nameParts = name.split(' ');
+          let firstName = '';
+          let lastName = '';
+          
+          if (nameParts.length >= 2) {
+            firstName = nameParts[0];
+            lastName = nameParts.slice(1).join(' ');
+          } else {
+            lastName = name;
+          }
+          
+          return { name, firstName, lastName };
+        });
+        
+        setSavedCollaborators(collaboratorsArray);
         setFeedbacks(feedbacksByCollaborator);
         console.log("Processed feedbacks:", feedbacksByCollaborator);
       } else {
@@ -258,28 +296,28 @@ const Choix = () => {
           // Force a complete re-rendering by setting state in sequence
           setCollaborators([]);
           setTimeout(() => {
-            setCollaborators(groupedCollaborators);
-            setFilteredCollaborators(groupedCollaborators);
-            
-            // Set categories from the new collaborators
-            const categories = [...new Set(groupedCollaborators.flatMap(collab => 
-              collab.skills.map(skill => skill["Skill Parent-Category"])
-            ))].filter(Boolean);
-            setParentCategories(categories);
-            
-            const skillCategories = [...new Set(groupedCollaborators.flatMap(collab => 
-              collab.skills.map(skill => skill["Skill Category"])
-            ))].filter(Boolean);
-            setSkillCategories(skillCategories);
-  
-            // Reset states
-            setSearchTerm("");
-            setSelectedParentCategory("");
-            setSelectedSkillCategory("");
-            setExpandedCollaborators(new Set());
-            setSelectedCollaborator(null);
-            setFeedback("");
-            setFeedbackMessage("");
+          setCollaborators(groupedCollaborators);
+          setFilteredCollaborators(groupedCollaborators);
+          
+          // Set categories from the new collaborators
+          const categories = [...new Set(groupedCollaborators.flatMap(collab => 
+            collab.skills.map(skill => skill["Skill Parent-Category"])
+          ))].filter(Boolean);
+          setParentCategories(categories);
+          
+          const skillCategories = [...new Set(groupedCollaborators.flatMap(collab => 
+            collab.skills.map(skill => skill["Skill Category"])
+          ))].filter(Boolean);
+          setSkillCategories(skillCategories);
+
+          // Reset states
+          setSearchTerm("");
+          setSelectedParentCategory("");
+          setSelectedSkillCategory("");
+          setExpandedCollaborators(new Set());
+          setSelectedCollaborator(null);
+          setFeedback("");
+          setFeedbackMessage("");
             
             // Fetch feedbacks for all collaborators
             fetchFeedbacks();
@@ -321,12 +359,24 @@ const Choix = () => {
     e.preventDefault();
     if (!feedback.trim() || !selectedCollaborator) return;
 
+    // Get the collaborator's full name
+    const collaboratorName = `${selectedCollaborator["First Name"]} ${selectedCollaborator["Last Name"]}`;
+    
+    // Check if the user has already provided feedback for this collaborator
+    const existingFeedbacks = feedbacks[collaboratorName] || [];
+    const hasUserAlreadyProvidedFeedback = existingFeedbacks.some(fb => fb.created_by === user.email);
+    
+    if (hasUserAlreadyProvidedFeedback) {
+      setFeedbackMessage("❌ Vous avez déjà fourni un feedback pour ce collaborateur.");
+      return;
+    }
+    
     setFeedbackLoading(true);
     setFeedbackMessage("");
 
     try {
-      await axios.post("http://localhost:8000/add_feedback", {
-        collaborator_name: `${selectedCollaborator["First Name"]} ${selectedCollaborator["Last Name"]}`,
+      const response = await axios.post("http://localhost:8000/add_feedback", {
+        collaborator_name: collaboratorName,
         feedback: feedback.trim(),
         user_email: userEmail,
         department: userDepartment
@@ -334,6 +384,11 @@ const Choix = () => {
 
       setFeedbackMessage("✅ Feedback envoyé avec succès!");
       setFeedback("");
+      
+      // Log if feedback was recommended based on sentiment analysis
+      if (response.data && response.data.is_recommended) {
+        console.log("Ce feedback a été automatiquement marqué comme recommandé basé sur l'analyse de sentiment.");
+      }
       
       // Refresh feedbacks
       fetchFeedbacks();
@@ -405,6 +460,212 @@ const Choix = () => {
         : gradeB - gradeA;
     });
 
+  const handleNewCollaboratorSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Check if we're submitting for an existing collaborator or a new one
+    if (selectedExistingCollaborator) {
+      // For existing collaborator, just need feedback
+      if (!feedback.trim()) {
+        setFeedbackMessage("❌ Veuillez remplir le champ feedback.");
+        return;
+      }
+      
+      setFeedbackLoading(true);
+      setFeedbackMessage("");
+
+      try {
+        const response = await axios.post("http://localhost:8000/add_feedback", {
+          collaborator_name: selectedExistingCollaborator.name,
+          feedback: feedback.trim(),
+          user_email: userEmail,
+          department: userDepartment
+        });
+
+        setFeedbackMessage("✅ Feedback envoyé avec succès!");
+        setFeedback("");
+        
+        // Log if feedback was recommended based on sentiment analysis
+        if (response.data && response.data.is_recommended) {
+          console.log("Ce feedback a été automatiquement marqué comme recommandé basé sur l'analyse de sentiment.");
+        }
+        
+        // Notifications are now handled by the backend
+        
+        // Refresh feedbacks
+        fetchFeedbacks();
+        
+        // Close modal after successful submission
+        setTimeout(() => {
+          setShowNewCollaboratorModal(false);
+          setSelectedExistingCollaborator(null);
+          setFeedbackMessage("");
+        }, 2000);
+      } catch (error) {
+        setFeedbackMessage("❌ Erreur lors de l'envoi du feedback.");
+        console.error("Feedback error:", error);
+      } finally {
+        setFeedbackLoading(false);
+      }
+    } else {
+      // For new collaborator, need all fields
+      if (!feedback.trim() || !newCollaborator.firstName || !newCollaborator.lastName || !newCollaborator.grade) {
+        setFeedbackMessage("❌ Veuillez remplir tous les champs.");
+        return;
+      }
+
+      setFeedbackLoading(true);
+      setFeedbackMessage("");
+
+      try {
+        const collaboratorName = `${newCollaborator.firstName} ${newCollaborator.lastName}`;
+        
+        // Check if the collaborator already exists and if the user has already given feedback
+        const existingFeedbacks = feedbacks[collaboratorName] || [];
+        console.log("[handleNewCollaboratorSubmit - New] Checking feedback:", { userEmail, existingFeedbacks }); // DEBUG LOG
+        const hasUserAlreadyProvidedFeedback = existingFeedbacks.some(fb => fb.created_by === userEmail);
+        
+        if (hasUserAlreadyProvidedFeedback) {
+          setFeedbackMessage("❌ Vous avez déjà fourni un feedback pour ce collaborateur.");
+          return;
+        }
+        
+        const response = await axios.post("http://localhost:8000/add_feedback", {
+          collaborator_name: collaboratorName,
+          feedback: feedback.trim(),
+          user_email: userEmail,
+          department: userDepartment
+        });
+
+        setFeedbackMessage("✅ Feedback envoyé avec succès!");
+        setFeedback("");
+        setNewCollaborator({
+          firstName: "",
+          lastName: "",
+          grade: ""
+        });
+        
+        // Log if feedback was recommended based on sentiment analysis
+        if (response.data && response.data.is_recommended) {
+          console.log("Ce feedback a été automatiquement marqué comme recommandé basé sur l'analyse de sentiment.");
+        }
+        
+        // Notifications are now handled by the backend
+        
+        // Refresh feedbacks
+        fetchFeedbacks();
+        
+        // Add the newly created collaborator to both main lists to ensure they appear in the "Ajouter à un projet" modal
+        if (!selectedExistingCollaborator) {
+          const newlyAddedCollaborator = {
+            "First Name": newCollaborator.firstName,
+            "Last Name": newCollaborator.lastName,
+            skills: [] // Add empty skills array for consistency
+          };
+          setCollaborators(prev => [...prev, newlyAddedCollaborator]);
+          setFilteredCollaborators(prev => [...prev, newlyAddedCollaborator]);
+        }
+        
+        // Close modal after successful submission
+        setTimeout(() => {
+          setShowNewCollaboratorModal(false);
+          setFeedbackMessage("");
+        }, 2000);
+      } catch (error) {
+        setFeedbackMessage("❌ Erreur lors de l'envoi du feedback.");
+        console.error("Feedback error:", error);
+      } finally {
+        setFeedbackLoading(false);
+      }
+    }
+  };
+
+  // Function to handle collaborator selection from the list
+  const handleSelectExistingCollaborator = (collab) => {
+    setSelectedExistingCollaborator(collab);
+  };
+  
+  // Reset selection and show manual input form
+  const handleShowManualInput = () => {
+    setSelectedExistingCollaborator(null);
+  };
+
+  // Available grades for dropdown
+  const gradeOptions = [
+    "Junior 1",
+    "Junior 2",
+    "Senior 1",
+    "Senior 2",
+    "Senior 3"
+  ];
+
+  // Add new function to fetch active projects
+  const fetchActiveProjects = useCallback(async () => {
+    if (!userEmail) return;
+    
+    setProjectsLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8000/get_active_projects?user_email=${userEmail}`);
+      if (response.data && Array.isArray(response.data)) {
+        setActiveProjects(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching active projects:", error);
+    } finally {
+      setProjectsLoading(false);
+    }
+  }, [userEmail]);
+
+  // Function to handle opening the add to project modal
+  const handleAddToProject = (collab) => {
+    setSelectedCollaboratorForProject(collab);
+    fetchActiveProjects();
+    setShowAddToProjectModal(true);
+    setAssignmentMessage("");
+  };
+
+  // Function to add a collaborator to a project
+  const handleAddCollaboratorToProject = async () => {
+    if (!selectedCollaboratorForProject || !selectedProjectForAssignment) {
+      setAssignmentMessage("❌ Veuillez sélectionner un projet.");
+      return;
+    }
+
+    setProjectsLoading(true);
+    try {
+      const collaborator = {
+        nom: selectedCollaboratorForProject["Last Name"],
+        prenom: selectedCollaboratorForProject["First Name"],
+        grade: "junior1", // Default grade - can be modified in the form
+        respect_delais: null,
+        participation: null,
+        resolution_problemes: null,
+        note_finale: "Non évalué"
+      };
+      
+      await axios.post(`http://localhost:8000/add_collaborator_to_project?user_email=${userEmail}`, {
+        project_id: selectedProjectForAssignment.id,
+        collaborateur: collaborator
+      });
+      
+      setAssignmentMessage("✅ Collaborateur ajouté au projet avec succès!");
+      
+      // Reset project selection after successful assignment
+      setTimeout(() => {
+        setShowAddToProjectModal(false);
+        setSelectedCollaboratorForProject(null);
+        setSelectedProjectForAssignment(null);
+        setAssignmentMessage("");
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Error adding collaborator to project:", error);
+      setAssignmentMessage(`❌ Erreur: ${error.response?.data?.detail || "Impossible d'ajouter le collaborateur au projet."}`);
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
+
   return (
     <div className="choix-container">
       {/* Header Section with Navigation and Title */}
@@ -412,7 +673,7 @@ const Choix = () => {
         <button className="btn back-btn" onClick={() => navigate("/dashboard")}>
           <FaArrowLeft className="back-icon" /> 
           <span>Retour au Dashboard</span>
-        </button>
+      </button>
         <h2 className="choix-title">Gestion des Collaborateurs</h2>
       </div>
 
@@ -420,22 +681,22 @@ const Choix = () => {
       <div className="main-area">
         {/* Left Sidebar - Filters and Upload */}
         <div className="left-sidebar">
-          {/* Upload Section */}
+      {/* Upload Section */}
           <div className="panel upload-panel">
             <h3 className="panel-title">
               <FaUpload className="panel-icon" /> Importer des données
             </h3>
             <div className="upload-content">
-              <label className="file-input-label">
-                <FaFileAlt className="me-2" />
-                <input type="file" accept=".xlsx" onChange={handleFileChange} hidden />
+        <label className="file-input-label">
+          <FaFileAlt className="me-2" />
+          <input type="file" accept=".xlsx" onChange={handleFileChange} hidden />
                 <span className="file-label-text">{file ? `📂 ${file.name}` : "Sélectionner un fichier"}</span>
-              </label>
-              <button 
+        </label>
+        <button 
                 className={`upload-button ${loadingAnimation ? 'loading' : ''}`} 
-                onClick={handleUpload} 
-                disabled={loading}
-              >
+          onClick={handleUpload} 
+          disabled={loading}
+        >
                 {loading ? (
                   <>
                     <div className="spinner"></div>
@@ -447,10 +708,10 @@ const Choix = () => {
                     <span>Charger Fichier</span>
                   </>
                 )}
-              </button>
+        </button>
               {message && <div className={`status-message ${message.includes('✅') ? 'success' : 'error'}`}>{message}</div>}
             </div>
-          </div>
+      </div>
 
           {/* Filters Panel */}
           <div className="panel filters-panel">
@@ -461,84 +722,114 @@ const Choix = () => {
             <div className="filter-content">
               {/* Search Box */}
               <div className="search-container">
-                <div className="search-box">
-                  <FaSearch className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder="Rechercher un collaborateur..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    className="search-input"
-                  />
-                  {searchTerm && (
-                    <button className="clear-search" onClick={clearSearch}>
-                      <FaTimes />
-                    </button>
-                  )}
-                </div>
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Rechercher un collaborateur..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="search-input"
+          />
+          {searchTerm && (
+            <button className="clear-search" onClick={clearSearch}>
+              <FaTimes />
+            </button>
+          )}
+        </div>
               </div>
 
               {/* Sort Button */}
               <div className="sort-container">
-                <button className="sort-btn" onClick={toggleSort}>
+        <button className="sort-btn" onClick={toggleSort}>
                   <FaStar className="sort-icon" />
                   <span>{sortOrder === "asc" ? "Grade croissant" : "Grade décroissant"}</span>
-                </button>
-              </div>
+        </button>
+      </div>
 
               {/* Category Filters */}
-              {parentCategories.length > 0 && (
-                <div className="filter-group">
+        {parentCategories.length > 0 && (
+          <div className="filter-group">
                   <label className="filter-label">Catégorie Parent</label>
                   <div className="select-wrapper">
-                    <select 
+              <select 
                       className="filter-select" 
-                      value={selectedParentCategory} 
-                      onChange={(e) => setSelectedParentCategory(e.target.value)}
-                    >
+                value={selectedParentCategory} 
+                onChange={(e) => setSelectedParentCategory(e.target.value)}
+              >
                       <option value="">Toutes les catégories</option>
-                      {parentCategories.map((category, index) => (
-                        <option key={index} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
+                {parentCategories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
                     <FaChevronDown className="select-arrow" />
                   </div>
-                </div>
-              )}
-              
-              {skillCategories.length > 0 && (
-                <div className="filter-group">
+          </div>
+        )}
+        
+        {skillCategories.length > 0 && (
+          <div className="filter-group">
                   <label className="filter-label">Compétence</label>
                   <div className="select-wrapper">
-                    <select 
+              <select 
                       className="filter-select" 
-                      value={selectedSkillCategory} 
-                      onChange={(e) => setSelectedSkillCategory(e.target.value)}
-                    >
+                value={selectedSkillCategory} 
+                onChange={(e) => setSelectedSkillCategory(e.target.value)}
+              >
                       <option value="">Toutes les compétences</option>
-                      {skillCategories.map((category, index) => (
-                        <option key={index} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
+                {skillCategories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
                     <FaChevronDown className="select-arrow" />
                   </div>
-                </div>
-              )}
-            </div>
           </div>
-        </div>
+        )}
+      </div>
+          </div>
+      </div>
 
         {/* Main Content Area */}
         <div className="content-area">
           {/* Collaborator Display */}
           <div className="panel collaborators-panel">
-            <h3 className="panel-title">
-              <FaUsers className="panel-icon" /> Collaborateurs ({filteredAndSortedCollaborators.length})
-            </h3>
+            <div className="panel-header-actions">
+              <h3 className="panel-title">
+                <FaUsers className="panel-icon" /> Collaborateurs ({filteredAndSortedCollaborators.length})
+              </h3>
+              
+              <div className="action-buttons">
+                {/* Add new button for adding collaborator to project */}
+                <button 
+                  className="add-to-project-btn" 
+                  onClick={() => {
+                    // By default, open the modal without a specific collaborator
+                    setSelectedCollaboratorForProject(null);
+                    fetchActiveProjects();
+                    setShowAddToProjectModal(true);
+                    setAssignmentMessage("");
+                  }}
+                >
+                  <FaUsers className="btn-icon" /> Ajouter à un Projet
+                </button>
+                
+                {/* Existing button for adding feedback */}
+                <button 
+                  className="add-new-feedback-btn" 
+                  onClick={() => {
+                    setShowNewCollaboratorModal(true);
+                    setFeedback("");
+                    setFeedbackMessage("");
+                  }}
+                >
+                  <FaComment className="btn-icon" /> Nouveau Feedback
+                </button>
+              </div>
+            </div>
             
             {feedbacksLoading && (
               <div className="loading-indicator">
@@ -547,27 +838,27 @@ const Choix = () => {
               </div>
             )}
             
-            <div className="collaborator-grid">
-              {filteredAndSortedCollaborators.length > 0 ? (
-                filteredAndSortedCollaborators.map((collab, index) => {
-                  const collabKey = `${collab["First Name"]} ${collab["Last Name"]}`;
-                  const isExpanded = expandedCollaborators.has(collabKey);
-                  const averageGrade = calculateAverageGrade(collab.skills);
+      <div className="collaborator-grid">
+        {filteredAndSortedCollaborators.length > 0 ? (
+          filteredAndSortedCollaborators.map((collab, index) => {
+            const collabKey = `${collab["First Name"]} ${collab["Last Name"]}`;
+            const isExpanded = expandedCollaborators.has(collabKey);
+            const averageGrade = calculateAverageGrade(collab.skills);
                   const collabFeedbacks = feedbacks[collabKey] || [];
-                  
-                  return (
-                    <div 
+            
+            return (
+              <div 
                       className={`collaborator-card ${selectedCollaborator === collab ? 'selected' : ''} ${isExpanded ? 'expanded' : ''}`} 
-                      key={index}
-                    >
+                key={index}
+              >
                       <div className="card-header" onClick={() => handleCollaboratorClick(collab)}>
                         <div className="collaborator-avatar">
                           {collab["First Name"].charAt(0)}{collab["Last Name"].charAt(0)}
                         </div>
-                        <div className="collaborator-info">
+                  <div className="collaborator-info">
                           <h3 className="collaborator-name">
                             {collab["First Name"]} {collab["Last Name"]}
-                          </h3>
+                    </h3>
                           <div className="collaborator-grade">
                             <div className="grade-stars">
                               {[...Array(5)].map((_, i) => (
@@ -575,25 +866,25 @@ const Choix = () => {
                               ))}
                             </div>
                             <span className="grade-value">{averageGrade}</span>
-                          </div>
-                        </div>
-                        <button 
+                    </div>
+                  </div>
+                  <button 
                           className="expand-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCollaboratorExpansion(collabKey);
-                          }}
-                        >
-                          {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
-                        </button>
-                      </div>
-                      
-                      {isExpanded && (
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCollaboratorExpansion(collabKey);
+                    }}
+                  >
+                    {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                  </button>
+                </div>
+                
+                {isExpanded && (
                         <div className="card-content">
                           <div className="skills-section">
                             <h4 className="section-title">Compétences</h4>
                             <div className="skills-grid">
-                              {collab.skills.map((skill, skillIndex) => (
+                    {collab.skills.map((skill, skillIndex) => (
                                 <div key={skillIndex} className="skill-chip">
                                   <div className="skill-name">
                                     <span className="skill-emoji">🔹</span> {skill["Skill"]}
@@ -603,8 +894,8 @@ const Choix = () => {
                                     <span>{skill["Grade Value"]}</span>
                                   </div>
                                   <div className="skill-category">{skill["Skill Category"]}</div>
-                                </div>
-                              ))}
+                      </div>
+                    ))}
                             </div>
                           </div>
 
@@ -624,25 +915,52 @@ const Choix = () => {
                                         <FaClock className="date-icon" /> {formatDate(fb.created_at)}
                                       </div>
                                     </div>
-                                    <p className="feedback-text">{fb.feedback}</p>
-                                  </div>
-                                ))}
+                                    <p className="feedback-text">
+                                      {fb.feedback}
+                                      {/* Display recommendation tag based on sentiment analysis and user role */}
+                                      {user.poste.toLowerCase().includes("manager") && (
+                                        <>
+                                          {fb.is_recommended === true && (
+                                            <span className="recommendation-tag positive">
+                                              <FaStar className="tag-icon" /> Recommandé
+                                            </span>
+                                          )}
+                                          {fb.is_recommended === false && (
+                                            <span className="recommendation-tag negative">
+                                              <FaTimes className="tag-icon" /> Non recommandé
+                                            </span>
+                                          )}
+                                        </>
+                                      )}
+                        </p>
+                      </div>
+                    ))}
                               </div>
                             </div>
                           )}
-                        </div>
-                      )}
-                      
+                  </div>
+                )}
+                
                       <div className="card-actions">
-                        <button 
+                <button 
                           className="action-btn feedback-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCollaboratorClick(collab);
-                          }}
-                        >
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCollaboratorClick(collab);
+                  }}
+                >
                           <FaComment className="action-icon" /> Donner un feedback
-                        </button>
+                </button>
+                
+                <button 
+                  className="action-btn project-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToProject(collab);
+                  }}
+                >
+                  <FaUsers className="action-icon" /> Ajouter à un projet
+                </button>
                         
                         {collabFeedbacks.length > 0 && !isExpanded && (
                           <div 
@@ -656,10 +974,10 @@ const Choix = () => {
                           </div>
                         )}
                       </div>
-                    </div>
-                  );
-                })
-              ) : (
+              </div>
+            );
+          })
+        ) : (
                 <div className="no-data-message">
                   <div className="no-data-icon">⚠</div>
                   <p className="no-data-text">Aucun collaborateur trouvé.</p>
@@ -696,6 +1014,13 @@ const Choix = () => {
                             <FaComment className="th-icon" /> Feedback
                           </div>
                         </th>
+                        {user.poste.toLowerCase().includes("manager") && (
+                          <th className="recommendation-col">
+                            <div className="th-content">
+                              <FaStar className="th-icon" /> Recommandation
+                            </div>
+                          </th>
+                        )}
                         <th className="author-col">
                           <div className="th-content">
                             <FaUser className="th-icon" /> Auteur
@@ -710,8 +1035,19 @@ const Choix = () => {
                     </thead>
                     <tbody>
                       {Object.entries(feedbacks).flatMap(([collaboratorName, collabFeedbacks]) => 
-                        collabFeedbacks.map((fb, index) => (
-                          <tr key={`${collaboratorName}-${index}`} className="feedback-row">
+                        // Sort collabFeedbacks with recommended feedbacks first
+                        collabFeedbacks
+                          .sort((a, b) => {
+                            // Sort recommended first, then non-recommended, then others
+                            if (a.is_recommended === true && b.is_recommended !== true) return -1;
+                            if (a.is_recommended !== true && b.is_recommended === true) return 1;
+                            return 0;
+                          })
+                          .map((fb, index) => (
+                          <tr 
+                            key={`${collaboratorName}-${index}`} 
+                            className={`feedback-row ${fb.is_recommended === true ? 'recommended' : ''}`}
+                          >
                             <td className="collaborator-cell">
                               <div className="cell-content">
                                 <div className="collab-avatar">
@@ -722,7 +1058,9 @@ const Choix = () => {
                             </td>
                             <td className="feedback-cell">
                               <div className="feedback-content-wrapper">
-                                <div className="feedback-content">{fb.feedback}</div>
+                                <div className="feedback-content">
+                                  {fb.feedback}
+                                </div>
                                 {fb.feedback.length > 100 && (
                                   <button 
                                     className="expand-feedback-btn" 
@@ -739,6 +1077,25 @@ const Choix = () => {
                                 )}
                               </div>
                             </td>
+                            {user.poste.toLowerCase().includes("manager") && (
+                              <td className="recommendation-cell">
+                                {fb.is_recommended === true && (
+                                  <span className="recommendation-tag table-tag positive">
+                                    <FaStar className="tag-icon" /> Recommandé
+                                  </span>
+                                )}
+                                {fb.is_recommended === false && (
+                                  <span className="recommendation-tag table-tag negative">
+                                    <FaTimes className="tag-icon" /> Non recommandé
+                                  </span>
+                                )}
+                                {fb.is_recommended !== true && fb.is_recommended !== false && (
+                                  <span className="recommendation-tag table-tag neutral">
+                                    Non évalué
+                                  </span>
+                                )}
+                              </td>
+                            )}
                             <td className="author-cell">
                               <div className="author-badge">
                                 <span className="author-initial">{fb.created_by[0]}</span>
@@ -801,13 +1158,13 @@ const Choix = () => {
       {/* Feedback Modal */}
       {selectedCollaborator && (
         <div className="modal-overlay">
-          <div className="feedback-modal">
+        <div className="feedback-modal">
             <div className="modal-header">
               <div className="modal-title">
                 <div className="collab-avatar large">
                   {selectedCollaborator["First Name"].charAt(0)}{selectedCollaborator["Last Name"].charAt(0)}
                 </div>
-                <h3>Feedback pour {selectedCollaborator["First Name"]} {selectedCollaborator["Last Name"]}</h3>
+            <h3>Feedback pour {selectedCollaborator["First Name"]} {selectedCollaborator["Last Name"]}</h3>
               </div>
               <button 
                 className="modal-close-btn" 
@@ -844,27 +1201,27 @@ const Choix = () => {
               
               <form onSubmit={handleFeedbackSubmit} className="feedback-form">
                 <h4 className="section-title">Nouveau Feedback</h4>
-                <div className="form-group">
-                  <textarea
+              <div className="form-group">
+                <textarea
                     id="feedback-text"
                     className="feedback-textarea"
-                    rows="4"
-                    placeholder="Écrivez votre feedback ici..."
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    required
+                  rows="4"
+                  placeholder="Écrivez votre feedback ici..."
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  required
                   ></textarea>
                 </div>
                 {feedbackMessage && (
                   <div className={`feedback-message ${feedbackMessage.includes('✅') ? 'success' : 'error'}`}>
                     {feedbackMessage}
-                  </div>
+              </div>
                 )}
-                <button 
-                  type="submit" 
+              <button 
+                type="submit" 
                   className="submit-btn"
-                  disabled={feedbackLoading}
-                >
+                disabled={feedbackLoading}
+              >
                   {feedbackLoading ? (
                     <>
                       <div className="spinner small"></div>
@@ -876,8 +1233,295 @@ const Choix = () => {
                       <span>Envoyer</span>
                     </>
                   )}
-                </button>
-              </form>
+              </button>
+            </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Collaborator Feedback Modal */}
+      {showNewCollaboratorModal && (
+        <div className="modal-overlay">
+          <div className="feedback-modal new-collab-modal">
+            <div className="modal-header">
+              <div className="modal-title">
+                <div className="collab-avatar large new-collab">
+                  <FaUser />
+                </div>
+                <h3>
+                  {selectedExistingCollaborator 
+                    ? `Feedback pour ${selectedExistingCollaborator.name}` 
+                    : "Ajouter un nouveau feedback"}
+                </h3>
+              </div>
+              <button 
+                className="modal-close-btn" 
+                onClick={() => {
+                  setShowNewCollaboratorModal(false);
+                  setSelectedExistingCollaborator(null);
+                }}
+                aria-label="Fermer"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              {!selectedExistingCollaborator && (
+                <>
+                  {/* List of Existing Collaborators */}
+                  {savedCollaborators.length > 0 && (
+                    <div className="existing-collaborators-section">
+                      <h4 className="section-title">Collaborateurs existants</h4>
+                      <div className="collaborators-list">
+                        {savedCollaborators.map((collab, index) => (
+                          <div 
+                            key={index}
+                            className="collaborator-list-item"
+                            onClick={() => handleSelectExistingCollaborator(collab)}
+                          >
+                            <div className="collaborator-list-avatar">
+                              {collab.firstName ? collab.firstName.charAt(0) : ''}{collab.lastName.charAt(0)}
+                            </div>
+                            <span className="collaborator-list-name">{collab.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="separator">
+                    <span>OU</span>
+                  </div>
+
+                  <h4 className="section-title">Nouveau collaborateur</h4>
+                </>
+              )}
+
+              <form onSubmit={handleNewCollaboratorSubmit} className="feedback-form">
+                {!selectedExistingCollaborator && (
+                  <>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="firstName" className="form-label">Prénom</label>
+                        <input
+                          type="text"
+                          id="firstName"
+                          className="form-control"
+                          placeholder="Prénom du collaborateur"
+                          value={newCollaborator.firstName}
+                          onChange={(e) => setNewCollaborator({...newCollaborator, firstName: e.target.value})}
+                          required={!selectedExistingCollaborator}
+                />
+              </div>
+                      <div className="form-group">
+                        <label htmlFor="lastName" className="form-label">Nom</label>
+                        <input
+                          type="text"
+                          id="lastName"
+                          className="form-control"
+                          placeholder="Nom du collaborateur"
+                          value={newCollaborator.lastName}
+                          onChange={(e) => setNewCollaborator({...newCollaborator, lastName: e.target.value})}
+                          required={!selectedExistingCollaborator}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="grade" className="form-label">Grade</label>
+                      <select
+                        id="grade"
+                        className="form-control grade-select"
+                        value={newCollaborator.grade}
+                        onChange={(e) => setNewCollaborator({...newCollaborator, grade: e.target.value})}
+                        required={!selectedExistingCollaborator}
+                      >
+                        <option value="">Sélectionner un grade</option>
+                        {gradeOptions.map((grade) => (
+                          <option key={grade} value={grade.toLowerCase().replace(' ', '')}>
+                            {grade}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                {selectedExistingCollaborator && (
+                  <div className="selected-collaborator-info">
+                    <button 
+                      type="button" 
+                      className="change-collaborator-btn" 
+                      onClick={handleShowManualInput}
+                    >
+                      <FaArrowLeft className="icon" /> Choisir un autre collaborateur
+                    </button>
+                  </div>
+                )}
+
+                <h4 className="section-title">Feedback</h4>
+                <div className="form-group">
+                  <textarea
+                    id="feedback-text"
+                    className="feedback-textarea"
+                    rows="4"
+                    placeholder="Écrivez votre feedback ici..."
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    required
+                  ></textarea>
+                </div>
+                
+                {feedbackMessage && (
+                  <div className={`feedback-message ${feedbackMessage.includes('✅') ? 'success' : 'error'}`}>
+                    {feedbackMessage}
+                  </div>
+                )}
+                
+              <button 
+                type="submit" 
+                  className="submit-btn"
+                disabled={feedbackLoading}
+              >
+                  {feedbackLoading ? (
+                    <>
+                      <div className="spinner small"></div>
+                      <span>Envoi en cours...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaPaperPlane className="send-icon" /> 
+                      <span>Envoyer</span>
+                    </>
+                  )}
+              </button>
+            </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add to Project Modal */}
+      {showAddToProjectModal && (
+        <div className="modal-overlay">
+          <div className="project-assignment-modal">
+            <div className="modal-header">
+              <div className="modal-title">
+                <div className="collab-avatar large">
+                  {selectedCollaboratorForProject ? 
+                    `${selectedCollaboratorForProject["First Name"].charAt(0)}${selectedCollaboratorForProject["Last Name"].charAt(0)}` : 
+                    <FaUsers />
+                  }
+                </div>
+                <h3>
+                  {selectedCollaboratorForProject ? 
+                    `Ajouter ${selectedCollaboratorForProject["First Name"]} ${selectedCollaboratorForProject["Last Name"]} à un projet` 
+                    : "Sélectionner un projet"}
+                </h3>
+              </div>
+              <button 
+                className="modal-close-btn" 
+                onClick={() => {
+                  setShowAddToProjectModal(false);
+                  setSelectedCollaboratorForProject(null);
+                }}
+                aria-label="Fermer"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              {!selectedCollaboratorForProject && (
+                <div className="collaborator-selector">
+                  <h4 className="section-title">Sélectionner un collaborateur</h4>
+                  <div className="collaborators-list scrollable-list">
+                    {filteredAndSortedCollaborators.map((collab, index) => (
+                      <div 
+                        key={index}
+                        className="collaborator-list-item"
+                        onClick={() => setSelectedCollaboratorForProject(collab)}
+                      >
+                        <div className="collaborator-list-avatar">
+                          {collab["First Name"].charAt(0)}{collab["Last Name"].charAt(0)}
+                        </div>
+                        <span className="collaborator-list-name">
+                          {collab["First Name"]} {collab["Last Name"]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedCollaboratorForProject && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="project" className="form-label">Sélectionner un projet</label>
+                    {projectsLoading ? (
+                      <div className="loading-select-indicator">
+                        <div className="spinner small"></div>
+                        <span>Chargement des projets...</span>
+                      </div>
+                    ) : (
+                      <select
+                        id="project"
+                        className="form-control"
+                        value={selectedProjectForAssignment ? selectedProjectForAssignment.id : ""}
+                        onChange={(e) => {
+                          const selectedProject = activeProjects.find(p => p.id === parseInt(e.target.value));
+                          setSelectedProjectForAssignment(selectedProject);
+                        }}
+                        disabled={projectsLoading}
+                      >
+                        <option value="">Sélectionner un projet</option>
+                        {activeProjects.map((project, index) => (
+                          <option key={index} value={project.id}>
+                            {project.nom}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {assignmentMessage && (
+                <div className={`status-message ${assignmentMessage.includes('✅') ? 'success' : 'error'}`}>
+                  {assignmentMessage}
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                className="submit-btn"
+                onClick={handleAddCollaboratorToProject}
+                disabled={!selectedProjectForAssignment || projectsLoading}
+              >
+                {projectsLoading ? (
+                  <>
+                    <div className="spinner small"></div>
+                    <span>Chargement...</span>
+                  </>
+                ) : !selectedCollaboratorForProject ? (
+                  <>
+                    <FaUsers className="send-icon" />
+                    <span>Sélectionner un collaborateur</span>
+                  </>
+                ) : !selectedProjectForAssignment ? (
+                  <>
+                    <FaPaperPlane className="send-icon" />
+                    <span>Sélectionner un projet</span>
+                  </>
+                ) : (
+                  <>
+                    <FaPaperPlane className="send-icon" />
+                    <span>Ajouter au projet</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

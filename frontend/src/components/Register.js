@@ -6,6 +6,37 @@ import "../styles/Register.css";
 import kpmgLogo from "../assets/kpmga.png";
 import naptaLogo from "../assets/naptar.png";
 
+// Custom styles to make inputs smaller
+const smallInputStyles = {
+  container: {
+    height: '36px',
+    minHeight: '36px'
+  },
+  iconBox: {
+    width: '32px',
+    height: '32px',
+    padding: '0.3rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#00338d', // KPMG blue
+    backgroundColor: '#f0f5ff' // Light blue background
+  },
+  input: {
+    height: '32px',
+    padding: '0.4rem 0.5rem',
+    fontSize: '0.9rem'
+  },
+  button: {
+    height: '36px',
+    padding: '0.4rem'
+  },
+  passwordToggle: {
+    fontSize: '0.9rem', 
+    padding: '0 0.5rem'
+  }
+};
+
 function Register() {
   const [form, setForm] = useState({
     email: "",
@@ -73,7 +104,7 @@ function Register() {
       <div className="register-card">
         <div className="register-logo-container">
           <div className="app-logo-circle">
-            <img src={kpmgLogo} alt="KPMG Logo" className="logo-center" />
+            <img src={kpmgLogo} alt="KPMG Logo" className="logo-center" style={{ filter: 'none' }} />
           </div>
         </div>
 
@@ -92,8 +123,8 @@ function Register() {
             <div className="form-row">
               <div className="form-field">
                 <label htmlFor="prenom">Prénom</label>
-                <div className="input-container">
-                  <div className="icon-box">
+                <div className="input-container" style={smallInputStyles.container}>
+                  <div className="icon-box" style={smallInputStyles.iconBox}>
                     <FaUser />
                   </div>
                   <input 
@@ -105,14 +136,15 @@ function Register() {
                     onChange={handleChange} 
                     required 
                     className="register-input"
+                    style={smallInputStyles.input}
                   />
                 </div>
               </div>
 
               <div className="form-field">
                 <label htmlFor="nom">Nom</label>
-                <div className="input-container">
-                  <div className="icon-box">
+                <div className="input-container" style={smallInputStyles.container}>
+                  <div className="icon-box" style={smallInputStyles.iconBox}>
                     <FaUser />
                   </div>
                   <input 
@@ -124,6 +156,7 @@ function Register() {
                     onChange={handleChange} 
                     required 
                     className="register-input"
+                    style={smallInputStyles.input}
                   />
                 </div>
               </div>
@@ -132,8 +165,8 @@ function Register() {
             <div className="form-row">
               <div className="form-field">
                 <label htmlFor="departement">Département</label>
-                <div className="input-container">
-                  <div className="icon-box">
+                <div className="input-container" style={smallInputStyles.container}>
+                  <div className="icon-box" style={smallInputStyles.iconBox}>
                     <FaBuilding />
                   </div>
                   <select 
@@ -143,11 +176,12 @@ function Register() {
                     onChange={handleChange} 
                     required
                     className="register-input select-input"
+                    style={smallInputStyles.input}
                   >
-                    <option value="">Sélectionnez un département</option>
+                    <option value="">Sélectionnez</option>
                     <option value="Audit">Audit</option>
                     <option value="Audit IFRS">Audit IFRS</option>
-                    <option value="Strategy & Deal Advisory">Strategy & Deal Advisory</option>
+                    <option value="Strategy & Deal Advisory">Strategy & Deal</option>
                     <option value="IT Risk">IT Risk</option>
                     <option value="Technology">Technology</option>
                     <option value="Tax">Tax</option>
@@ -158,15 +192,15 @@ function Register() {
                     <option value="Finance">Finance</option>
                     <option value="RM">RM</option>
                     <option value="RH">RH</option>
-                    <option value="Management Consulting">Management Consulting</option>
+                    <option value="Management Consulting">Consulting</option>
                   </select>
                 </div>
               </div>
 
               <div className="form-field">
                 <label htmlFor="poste">Poste</label>
-                <div className="input-container">
-                  <div className="icon-box">
+                <div className="input-container" style={smallInputStyles.container}>
+                  <div className="icon-box" style={smallInputStyles.iconBox}>
                     <FaBriefcase />
                   </div>
                   <select 
@@ -176,16 +210,17 @@ function Register() {
                     onChange={handleChange}
                     required
                     className="register-input select-input"
+                    style={smallInputStyles.input}
                   >
-                    <option value="Assistant Manager 1">Assistant Manager 1</option>
-                    <option value="Assistant Manager 2">Assistant Manager 2</option>
+                    <option value="Assistant Manager 1">AM 1</option>
+                    <option value="Assistant Manager 2">AM 2</option>
                     <option value="Manager 1">Manager 1</option>
                     <option value="Manager 2">Manager 2</option>
                     <option value="Manager 3">Manager 3</option>
-                    <option value="Senior Manager 1">Senior Manager 1</option>
-                    <option value="Senior Manager 2">Senior Manager 2</option>
-                    <option value="Senior Manager 3">Senior Manager 3</option>
-                    <option value="Senior Manager 4">Senior Manager 4</option>
+                    <option value="Senior Manager 1">SM 1</option>
+                    <option value="Senior Manager 2">SM 2</option>
+                    <option value="Senior Manager 3">SM 3</option>
+                    <option value="Senior Manager 4">SM 4</option>
                     <option value="Director 1">Director 1</option>
                     <option value="Director 2">Director 2</option>
                     <option value="Partner">Partner</option>
@@ -197,8 +232,8 @@ function Register() {
             <div className="form-row">
               <div className="form-field">
                 <label htmlFor="email">Email</label>
-                <div className="input-container">
-                  <div className="icon-box">
+                <div className="input-container" style={smallInputStyles.container}>
+                  <div className="icon-box" style={smallInputStyles.iconBox}>
                     <FaEnvelope />
                   </div>
                   <input 
@@ -211,14 +246,15 @@ function Register() {
                     required 
                     autoComplete="email"
                     className="register-input"
+                    style={smallInputStyles.input}
                   />
                 </div>
               </div>
               
               <div className="form-field">
                 <label htmlFor="password">Mot de passe</label>
-                <div className="input-container">
-                  <div className="icon-box">
+                <div className="input-container" style={smallInputStyles.container}>
+                  <div className="icon-box" style={smallInputStyles.iconBox}>
                     <FaLock />
                   </div>
                   <input 
@@ -231,12 +267,14 @@ function Register() {
                     required 
                     autoComplete="new-password"
                     className="register-input"
+                    style={smallInputStyles.input}
                   />
                   <button 
                     type="button" 
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
+                    style={smallInputStyles.passwordToggle}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -246,8 +284,8 @@ function Register() {
 
             <div className="form-field full-width">
               <label htmlFor="confirmPassword">Confirmer mot de passe</label>
-              <div className="input-container">
-                <div className="icon-box">
+              <div className="input-container" style={smallInputStyles.container}>
+                <div className="icon-box" style={smallInputStyles.iconBox}>
                   <FaLock />
                 </div>
                 <input 
@@ -262,12 +300,14 @@ function Register() {
                   className="register-input"
                   onCopy={(e) => e.preventDefault()} 
                   onPaste={(e) => e.preventDefault()} 
+                  style={smallInputStyles.input}
                 />
                 <button 
                   type="button" 
                   className="password-toggle"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label={showConfirmPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
+                  style={smallInputStyles.passwordToggle}
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -278,6 +318,7 @@ function Register() {
               type="submit" 
               className="register-button"
               disabled={isLoading}
+              style={smallInputStyles.button}
             >
               {isLoading ? (
                 <span className="loading-spinner"></span>
@@ -299,12 +340,18 @@ function Register() {
               alt="KPMG Logo"
               className="logo-bottom"
               onClick={() => window.open("https://kpmg.com/tn/fr/home.html", "_blank")}
+              style={{ opacity: 1, height: '30px', transition: 'transform 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             />
             <img
               src={naptaLogo}
               alt="Napta Logo"
               className="logo-bottom"
               onClick={() => window.open("https://www.napta.io/en", "_blank")}
+              style={{ opacity: 1, height: '30px', transition: 'transform 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             />
           </div>
         </div>

@@ -608,27 +608,56 @@
 /* Card Actions */
 .card-actions {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
   justify-content: space-between;
-  padding: 12px 16px;
 }
 
 .action-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background-color: #f1f5f9;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
+  border-radius: 6px;
   font-weight: 500;
-  color: #6366f1;
-  transition: all 0.3s ease;
+  font-size: 0.85rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
 }
 
 .action-btn.feedback-btn {
-  background-color: #ede9fe;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #8b5cf6;
+  color: white;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: none;
+}
+
+.action-btn.feedback-btn:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn.feedback-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
+}
+
+.action-btn.feedback-btn svg {
+  font-size: 1rem;
 }
 
 .action-btn:hover {
@@ -638,6 +667,15 @@
 
 .action-icon {
   font-size: 0.9rem;
+}
+
+.project-btn {
+  background-color: #4299e1;
+  color: white;
+}
+
+.project-btn:hover {
+  background-color: #3182ce;
 }
 
 .feedback-badge {
@@ -1094,8 +1132,13 @@
 }
 
 .submit-btn:disabled {
-  background-color: #94a3b8;
+  opacity: 0.7;
   cursor: not-allowed;
+}
+
+.submit-btn:disabled:hover {
+  background-color: #2c6fa5;
+  transform: none;
 }
 
 .send-icon {
@@ -1149,5 +1192,568 @@
   
   .panel-title {
     font-size: 1rem;
+  }
+}
+
+/* Add these styles for the new collaborator feedback feature */
+
+/* Panel header with actions */
+.panel-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* New feedback button */
+.add-new-feedback-btn {
+  background-color: #e84c3d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-new-feedback-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.add-new-feedback-btn i {
+  margin-right: 8px;
+}
+
+/* New collaborator modal styling */
+.new-collab-modal {
+  max-width: 550px;
+}
+
+.new-collab {
+  background-color: #00338d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus {
+  border-color: #00338d;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 51, 141, 0.2);
+}
+
+.grade-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 30px;
+}
+
+.section-title {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #00338d;
+  font-weight: 600;
+}
+
+/* Success message animation */
+.feedback-message.success {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Add these styles for the collaborator search autocomplete */
+
+.collaborator-search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.collaborator-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  margin-top: 5px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  gap: 10px;
+}
+
+.suggestion-item:hover {
+  background-color: #f1f5f9;
+}
+
+.suggestion-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.suggestion-name {
+  font-weight: 500;
+  color: #334155;
+}
+
+/* Add these styles for the existing collaborators list and separator */
+
+.existing-collaborators-section {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.collaborators-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.collaborator-list-item {
+  display: flex;
+    align-items: center;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 10px;
+}
+
+.collaborator-list-item:hover {
+  background-color: #ede9fe;
+  border-color: #c4b5fd;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.collaborator-list-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00338d, #0055d4);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.collaborator-list-name {
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.separator span {
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.selected-collaborator-info {
+  margin-bottom: 20px;
+}
+
+.change-collaborator-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.change-collaborator-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.change-collaborator-btn .icon {
+  font-size: 12px;
+}
+
+/* Add styles for the project assignment button and modal */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.add-to-project-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.add-to-project-btn:hover {
+  background-color: #3182ce;
+  transform: translateY(-2px);
+}
+
+.project-btn {
+  background-color: #4299e1;
+  color: white;
+}
+
+.project-btn:hover {
+  background-color: #3182ce;
+}
+
+/* Project modal styles */
+.project-assignment-modal {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.collaborator-selection-section,
+.project-selection-section {
+  margin-bottom: 24px;
+}
+
+.projects-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.modal-projects-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.project-list-item:last-child {
+  border-bottom: none;
+}
+
+.project-list-item:hover {
+  background-color: #f7fafc;
+}
+
+.project-list-item.selected {
+  background-color: #ebf8ff;
+  border-left: 4px solid #4299e1;
+}
+
+.project-list-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #4299e1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.project-list-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-list-name {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 1rem;
+}
+
+.project-list-date {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 4px;
+}
+
+.assignment-message {
+    padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.assignment-message.success {
+  background-color: #c6f6d5;
+  color: #22543d;
+}
+
+.assignment-message.error {
+  background-color: #fed7d7;
+  color: #9b2c2c;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .add-to-project-btn,
+  .add-new-feedback-btn {
+    width: 100%;
+  }
+  
+  .project-assignment-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .card-actions {
+    flex-direction: column;
+  }
+}
+
+/* Add these styles for the sentiment analysis recommendation tag */
+.recommendation-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  animation: tagFadeIn 0.3s ease-in-out;
+}
+
+@keyframes tagFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.recommendation-tag .tag-icon {
+  margin-right: 5px;
+  font-size: 0.75rem;
+}
+
+.recommendation-tag.positive {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #10b981;
+}
+
+.recommendation-tag.positive:hover {
+  background-color: #d1fae5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+}
+
+.recommendation-tag.negative {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #ef4444;
+}
+
+.recommendation-tag.negative:hover {
+  background-color: #fee2e2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+}
+
+.recommendation-tag.neutral {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.recommendation-tag.neutral:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.2);
+}
+
+.recommendation-tag.table-tag {
+  margin-top: 0;
+  margin-left: 0;
+  display: inline-flex;
+  width: fit-content;
+}
+
+/* Recommendation column styles */
+.recommendation-col {
+  width: 150px;
+}
+
+.recommendation-cell {
+  text-align: center;
+}
+
+/* Highlight recommended rows */
+.feedback-row.recommended {
+  background-color: rgba(236, 253, 245, 0.3);
+}
+
+.loading-select-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  font-size: 14px;
+  color: #495057;
+  height: 38px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #2c6fa5;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.spinner.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .add-to-project-btn,
+  .add-new-feedback-btn {
+    width: 100%;
+  }
+  
+  .project-assignment-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .card-actions {
+    flex-direction: column;
+  }
+  
+  .recommendation-col, 
+  .recommendation-cell {
+    width: auto;
   }
 }

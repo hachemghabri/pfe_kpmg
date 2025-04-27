@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -20,6 +20,21 @@ class User(Base):
     skills = relationship("CollaboratorSkill", back_populates="user", cascade="all, delete-orphan")
     projects = relationship("Project", back_populates="user", cascade="all, delete-orphan")
     feedbacks = relationship("CollaboratorFeedback", back_populates="user", cascade="all, delete-orphan")
+    notifications = relationship("Notification", foreign_keys="Notification.user_id", back_populates="user")
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    type = Column(String, nullable=False)  # 'feedback', etc.
+    message = Column(Text, nullable=False)
+    collaborator_name = Column(String, nullable=True)
+    created_by = Column(String, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    department = Column(String, nullable=False)
+
+    user = relationship("User", foreign_keys=[user_id], back_populates="notifications")
 
 class CollaboratorFeedback(Base):
     __tablename__ = "collaborator_feedbacks"
@@ -29,6 +44,7 @@ class CollaboratorFeedback(Base):
     department = Column(String(255), nullable=False)
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
+    is_recommended = Column(Boolean, default=False)  # Store sentiment analysis result
 
     user = relationship("User", back_populates="feedbacks")
 
@@ -93,6 +109,8 @@ class KPI(Base):
     metric_value = Column(Float, nullable=False)
     uploaded_by = Column(Integer, ForeignKey("users.id"))  # ✅ Ajout de l'ID de l'utilisateur
     date_created = Column(DateTime, default=datetime.utcnow)  # ✅ Date de création
+    chart_type = Column(String, default="bar")  # Store preferred chart type for this KPI
+    config_data = Column(Text, nullable=True)  # JSON data for storing configuration
 
     report = relationship("ReportFile", back_populates="kpis")
 
