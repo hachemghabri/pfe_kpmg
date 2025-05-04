@@ -174,77 +174,75 @@
 
 /* Stats Panel */
 .stats-panel {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  padding: 0.5rem;
 }
 
 .stat-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1.25rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  background-color: #f8fafc;
-  border-radius: 8px;
-  padding: 16px;
-  padding-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  position: relative;
-  overflow: visible !important;
+  border: 1px solid #f1f5f9;
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  font-size: 1.75rem;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  margin-right: 12px;
-  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
 }
 
 .project-icon {
-  background-color: #ede9fe;
-  color: #6366f1;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
 
 .collab-icon {
-  background-color: #e0f2fe;
-  color: #0ea5e9;
+  background: linear-gradient(135deg, #f97316, #c2410c);
 }
 
 .rating-icon {
-  background-color: #fef3c7;
-  color: #f59e0b;
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
 }
 
 .stat-content {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
 }
 
 .stat-value {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #334155;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #64748b;
-  position: relative;
-  height: 25px;
-  margin-top: 5px;
-  overflow: visible;
+  font-weight: 500;
 }
 
 .stat-label .hover-label {

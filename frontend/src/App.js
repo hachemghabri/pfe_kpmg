@@ -9,6 +9,7 @@ import Choix from "./components/Choix";
 import Admin from "./components/Admin";
 import AdminRap from "./components/AdminRap";
 import Settings from "./components/Settings"
+import Stats from "./components/Stats";
 import "./styles/Login.css";
 import "./styles/Register.css";
 import "./styles/Dashboard.css";
@@ -27,6 +28,7 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/adminrap" element={<AdminRap />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/stats" element={<Stats />} />
       </Routes>
     </Router>
   );

@@ -306,17 +306,10 @@ function Equipe() {
       
       console.log("Sending update to API for new collaborator:", projectData);
       
-      // Use the update_project endpoint instead of save_projects
-      const response = await axios.post(`http://localhost:8000/update_project?user_email=${userEmail}`, projectData);
+      // Remove unused response variable - save the result without storing it
+      await axios.post(`http://localhost:8000/update_project?user_email=${userEmail}`, projectData);
       
-      console.log("API response:", response.data);
-
-      // Reset form
-      setNewCollaborateur(prev => ({ ...prev, [projectId]: {} }));
-      setShowAddCollaborateur(prev => ({ ...prev, [projectId]: false }));
-      setErrors({});
-
-      // IMPORTANT FIX: Always fetch fresh data from server after adding to get proper IDs
+      // Update the project list with the updated project
       await fetchProjects();
       
       // Find and select the updated project with fresh data
@@ -608,7 +601,8 @@ function Equipe() {
         }))
       };
       
-      const response = await axios.post(`http://localhost:8000/update_project?user_email=${userEmail}`, projectData);
+      // Remove unused response variable - save the result without storing it
+      await axios.post(`http://localhost:8000/update_project?user_email=${userEmail}`, projectData);
       
       // Update the project list with the updated project
       await fetchProjects();
@@ -716,7 +710,7 @@ function Equipe() {
                 <div className="stat-content">
                   <div className="stat-value">{projects.length}</div>
                   <div className="stat-label">
-                    <span className="hover-label">Projets</span>
+                    Projets
                   </div>
                 </div>
               </div>
@@ -730,7 +724,7 @@ function Equipe() {
                     {projects.reduce((acc, proj) => acc + proj.collaborateurs.length, 0)}
                   </div>
                   <div className="stat-label">
-                    <span className="hover-label">Collaborateurs</span>
+                    Collaborateurs
                   </div>
                 </div>
               </div>
@@ -750,7 +744,7 @@ function Equipe() {
                     })()}
                   </div>
                   <div className="stat-label">
-                    <span className="hover-label">Note Moyenne</span>
+                    Note Moyenne
                   </div>
                 </div>
               </div>

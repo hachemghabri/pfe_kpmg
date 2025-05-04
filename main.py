@@ -1551,21 +1551,78 @@ def add_feedback(feedback: FeedbackSchema, db: Session = Depends(get_db)):
     
     print(f"User found: ID={user.id}, Name={user.prenom} {user.nom}, Dept={user.departement}, Poste={user.poste}")
     
-    # Perform sentiment analysis using TextBlob
+    # Perform French sentiment analysis using TextBlob-fr with negation override
     try:
-        feedback_text = feedback.feedback
-        blob = TextBlob(feedback_text)
-        
-        # You might need to adjust the threshold based on testing
-        sentiment_polarity = blob.sentiment.polarity 
-        is_recommended = sentiment_polarity > 0.1 # Mark as recommended if polarity is clearly positive
+        # 1. Decode and clean the input text
+        try:
+            feedback_text = feedback.feedback.encode('utf-8').decode('utf-8')
+        except UnicodeDecodeError:
+            feedback_text = feedback.feedback
+            print("Warning: Could not decode feedback text as UTF-8, using original.")
 
-        print(f"TextBlob Sentiment analysis: polarity={sentiment_polarity:.2f}, is_recommended={is_recommended}")
-    except Exception as e:
-        print(f"Error in TextBlob sentiment analysis: {str(e)}")
-        # Default to neutral if analysis fails
-        is_recommended = False # Default to False if analysis fails
+        cleaned_text = " ".join(feedback_text.lower().split())
+        print(f"Cleaned feedback text for analysis: '{cleaned_text}'")
+
+        # 2. Initialize default sentiment
         sentiment_polarity = 0.0
+        is_recommended = False
+        analysis_successful = False
+        negation_found = False
+
+        # 3. Explicit Negation/Negative Keyword Check (PRIORITY)
+        negation_patterns = [
+            "ne recommande pas", "ne le recommande pas", "pas recommandé",
+            "ne recommande plus", "déconseille", "pas bien", "pas bon",
+            "n'est pas", "n'est pas bon", "n'est pas bien", "n'est pas recommandé",
+            "mauvais", "horrible", "terrible", "décevant", "médiocre", "incompétent",
+            "ajouté rien", "n'a rien ajouté", "ne fait rien", "pas utile","incompétente","ne respecte pas",
+        ]
+        for pattern in negation_patterns:
+            if pattern in cleaned_text:
+                print(f"Explicit negation/negative pattern found: '{pattern}'. Forcing negative recommendation.")
+                negation_found = True
+                is_recommended = False
+                sentiment_polarity = -0.5 # Force a clear negative score
+                break # Stop checking once a negative pattern is found
+
+        # 4. Analyze sentiment using TextBlob-fr ONLY IF no negation was found
+        if not negation_found:
+            try:
+                try:
+                    from textblob_fr import PatternTagger, PatternAnalyzer
+                except ImportError:
+                    print("Error: textblob-fr library not found. Please run 'pip install textblob-fr'")
+                    raise
+                # Removed NLTK download check as requested
+
+                # Perform the analysis
+                tb_fr = TextBlob(cleaned_text, pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
+                calculated_polarity = tb_fr.sentiment[0]
+                print(f"TextBlob-Fr raw analysis: polarity={calculated_polarity:.2f}")
+                analysis_successful = True
+
+                # Determine recommendation based on polarity (threshold > 0.0)
+                is_recommended = calculated_polarity > 0.0
+                sentiment_polarity = calculated_polarity # Use the calculated score
+
+            except Exception as analysis_error:
+                print(f"Error during TextBlob-fr analysis: {analysis_error}")
+                # Fallback to neutral if TextBlob-fr fails AND no negation was found
+                sentiment_polarity = 0.0
+                is_recommended = False
+                analysis_successful = False
+        else:
+             # If negation was found earlier, skip TextBlob-fr analysis entirely for sentiment
+             print("Skipping TextBlob-fr analysis due to prior negation detection.")
+             analysis_successful = False # Mark as unsuccessful because we relied on pattern
+
+        print(f"Final French sentiment: polarity={sentiment_polarity:.2f}, is_recommended={is_recommended}, negation_found={negation_found}, analysis_success={analysis_successful}")
+
+    except Exception as e:
+        # 5. General fallback if anything unexpected happens
+        print(f"General error in sentiment analysis pipeline: {str(e)}")
+        sentiment_polarity = 0.0 # Default to neutral
+        is_recommended = False # Default to not recommended
 
     new_feedback = CollaboratorFeedback(
         collaborator_name=feedback.collaborator_name,
@@ -1934,7 +1991,6 @@ def add_collaborator_to_project(user_email: str, data: dict, db: Session = Depen
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erreur lors de l'ajout du collaborateur: {str(e)}")
-
 
 
 

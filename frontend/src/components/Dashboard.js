@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaHome, FaUsers, FaTasks, FaBell, FaChartBar, FaSignOutAlt, FaBars,
-  FaChartPie, FaDatabase, FaLightbulb, FaUserCircle, FaCog, FaChevronRight
+  FaChartPie, FaDatabase, FaLightbulb, FaUserCircle, FaCog, FaChevronRight,
+  FaChartLine
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "../styles/Dashboard.css";
@@ -115,6 +116,15 @@ function Dashboard() {
               {isSidebarOpen && <FaChevronRight className="nav-arrow" />}
             </Link>
           </li>
+          {/* Statistics menu item - Only visible for RH department */}
+          {user && user.departement === "RH" && (
+            <li className={`nav-item ${activeSection === 'stats' ? 'active' : ''}`}>
+              <Link to="/stats" className="nav-link" onClick={() => handleSectionClick('stats')}>
+                <FaChartLine /> {isSidebarOpen && <span>Tableaux de bord RH</span>}
+                {isSidebarOpen && <FaChevronRight className="nav-arrow" />}
+              </Link>
+            </li>
+          )}
           <li className={`nav-item ${activeSection === 'notifications' ? 'active' : ''}`}>
             <div 
               className="nav-link" 
@@ -270,7 +280,7 @@ function Dashboard() {
               
               <div className="footer-bottom">
                 <div className="footer-copyright">
-                  <p>&copy; {new Date().getFullYear()} - Tableau de bord KPMG | Tous droits réservés</p>
+                  <p>&copy; {new Date().getFullYear()} - OptiTeam KPMG | Tous droits réservés</p>
                 </div>
                 <div className="footer-version">
                   <p>Version 1.0.0</p>

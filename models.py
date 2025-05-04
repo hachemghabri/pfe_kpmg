@@ -127,3 +127,30 @@ class PendingTimesheet(Base):
 
     report = relationship("ReportFile")
     user = relationship("User")
+
+# New Model for Storing Collaborator Names per Staffing Category
+class StaffingCollaborator(Base):
+    __tablename__ = "staffing_collaborators"
+    id = Column(Integer, primary_key=True, index=True)
+    report_id = Column(Integer, ForeignKey("report_files.id"))
+    uploaded_by = Column(Integer, ForeignKey("users.id"))
+    position = Column(String, nullable=False)
+    category = Column(String, nullable=False) # e.g., "<50%", "50%-90%", ">90%"
+    names = Column(Text, nullable=True) # Pipe-separated list of names "Name1|Name2|..."
+    date_created = Column(DateTime, default=datetime.utcnow)
+
+    report = relationship("ReportFile") # Optional: if you need to link back
+    user = relationship("User")         # Optional: if you need to link back
+
+class StaffingCollaboratorNames(Base):
+    __tablename__ = "staffing_collaborator_names"
+    id = Column(Integer, primary_key=True, index=True)
+    position = Column(String, nullable=False)
+    category = Column(String, nullable=False)  # "<50%", "50%-90%", ">90%"
+    names_list = Column(Text, nullable=True)  # Pipe-separated string of full names
+    report_id = Column(Integer, ForeignKey("report_files.id"))
+    uploaded_by = Column(Integer, ForeignKey("users.id"))
+    date_created = Column(DateTime, default=datetime.utcnow)
+    
+    report = relationship("ReportFile")
+    user = relationship("User")

@@ -323,7 +323,9 @@ function Notifications() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">{collaborateurs.length}</div>
-                  <div className="stat-label">En attente</div>
+                  <div className="stat-label">
+                    En attente
+                  </div>
                 </div>
               </div>
               
@@ -332,22 +334,10 @@ function Notifications() {
                   <FaBuilding />
                 </div>
                 <div className="stat-content">
-                  <div className="stat-value">
-                    {departments.length - 1}
+                  <div className="stat-value">{departments.length - 1}</div>
+                  <div className="stat-label">
+                    Départements
                   </div>
-                  <div className="stat-label">Départements</div>
-                </div>
-              </div>
-              
-              <div className="stat-card">
-                <div className={`stat-icon ${collaborateurs.length > 0 ? 'status-danger' : 'status-success'}`}>
-                  <FaExclamationTriangle />
-                </div>
-                <div className="stat-content">
-                  <div className="stat-value">
-                    {collaborateurs.length > 0 ? "En attente" : "À jour"}
-                  </div>
-                  <div className="stat-label">Statut</div>
                 </div>
               </div>
             </div>
@@ -505,9 +495,6 @@ function Notifications() {
                             <FaExclamationTriangle className="warning-icon" />
                             <span className="message-title">Timesheet non rempli</span>
                     </div>
-                          <p className="message-detail">
-                            En retard de <span className="overdue-days">{collab.daysOverdue} jour{collab.daysOverdue > 1 ? 's' : ''}</span>
-                          </p>
                   </div>
                         
                         <div className="notification-actions">
