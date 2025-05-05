@@ -319,7 +319,7 @@ function Rapports() {
         {/* Header with Back Button */}
         <div className="rapports-header-section">
       <button className="back-btn" onClick={() => navigate("/dashboard")}>
-        <FaArrowLeft /> Retour au Dashboard
+        <FaArrowLeft /> Retour à l'Accueil 
       </button>
           <div className="rapports-header">
         <h1>Rapports et Tableaux de Bord</h1>

@@ -209,7 +209,7 @@ function Settings() {
 
       <div className="settings-header">
         <button className="back-button" onClick={() => navigate("/dashboard")}>
-          <FaArrowLeft /> Retour au tableau de bord
+          <FaArrowLeft /> Retour à l'Accueil
         </button>
         <h1 className="settings-title">Paramètres du Compte</h1>
       </div>

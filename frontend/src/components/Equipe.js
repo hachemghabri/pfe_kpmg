@@ -658,7 +658,7 @@ function Equipe() {
       <div className="equipe-header">
         <button onClick={() => window.history.back()} className="btn back-btn">
           <FaArrowLeft className="back-icon" /> 
-          <span>Retour au Dashboard</span>
+          <span>Retour à l'Accueil</span>
         </button>
         <h2 className="equipe-title text-center">Gestion des Projets & Équipes</h2>
       </div>
@@ -859,9 +859,13 @@ function Equipe() {
             </div>
             
             <div className="panel-footer">
-              <button onClick={handleExportExcel} className="export-btn">
+              <button 
+                onClick={handleExportExcel} 
+                className={`export-btn ${projects.length === 0 ? 'disabled-btn' : ''}`}
+                disabled={projects.length === 0}
+              >
                 <FaFileExcel className="btn-icon" /> Exporter Excel
-            </button>
+              </button>
             </div>
           </div>
         </div>
