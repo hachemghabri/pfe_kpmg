@@ -2,21 +2,23 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
+# Install system dependencies that might be needed for psycopg2
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+
 # Copy requirements file first for better caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install CORS middleware
-RUN pip install fastapi-cors
-
 # Copy the rest of the application
 COPY . .
 
-# Create upload directory
+# Create upload directory if it doesn't exist
 RUN mkdir -p uploads
 
-# Expose port
+# Expose the port the app runs on
 EXPOSE 8000
 
-# Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Command to run the application using Uvicorn
+# Use --host 0.0.0.0 to make it accessible outside the container
+# Add --reload for development convenience (optional for production)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"] 

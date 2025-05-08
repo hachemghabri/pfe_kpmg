@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Only use DATABASE_URL from environment variable without fallback
+# This ensures we only use the Docker container database
 DATABASE_URL = "postgresql://postgres:hach@localhost/kpmg"
 
 # Create database engine

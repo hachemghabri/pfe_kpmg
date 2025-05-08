@@ -1,7 +1,17 @@
-version: '3.8'
-
 services:
-  # Backend service
+  postgres:
+    image: postgres:13-alpine
+    container_name: kpmg-postgres
+    environment:
+      POSTGRES_USER: postgres         # Match your DATABASE_URL
+      POSTGRES_PASSWORD: hach         # Match your DATABASE_URL
+      POSTGRES_DB: kpmg             # Match your DATABASE_URL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist data
+    networks:
+      - app-network
+    restart: always
+
   backend:
     build:
       context: .
@@ -9,17 +19,22 @@ services:
     container_name: kpmg-backend
     ports:
       - "8000:8000"
+    # Mount current directory for backend code changes (development)
+    # Mount uploads volume
     volumes:
       - .:/app
-      - ./uploads:/app/uploads
+      - uploads:/app/uploads
     environment:
-      - DATABASE_URL=sqlite:///./app.db
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      # Use service name 'postgres' as the host for DB connection
+      - DATABASE_URL=postgresql://postgres:hach@postgres/kpmg
+    depends_on:
+      - postgres  # Ensure postgres starts before backend
+    # Add a delay to allow postgres to fully initialize
+    command: sh -c "sleep 10 && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
     networks:
       - app-network
     restart: always
 
-  # Frontend service
   frontend:
     build:
       context: ./frontend
@@ -27,19 +42,20 @@ services:
     container_name: kpmg-frontend
     ports:
       - "80:80"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    # No volumes needed for production build - files are baked into the image
     depends_on:
-      - backend
+      - backend   # Ensure backend is available for API calls
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
-      - PORT=80
+      # Pass the backend URL to the React app
+      # Use service name 'backend' for internal communication
+      - REACT_APP_API_URL=http://backend:8000
+      - PORT=80 # Port the serve command listens on inside the container
     networks:
       - app-network
     restart: always
 
 volumes:
+  postgres_data:
   uploads:
 
 networks:

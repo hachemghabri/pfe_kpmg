@@ -38,7 +38,15 @@ app = FastAPI()
 # CORS Middleware (Allow React Frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  
+    allow_origins=[
+        "http://localhost:3000",  # Development frontend
+        "http://localhost:80",    # Production frontend on port 80
+        "http://localhost",       # Production frontend without port
+        "http://frontend:80",     # Docker service name
+        "http://frontend",        # Docker service name without port
+        "http://backend:8000",    # Backend's own URL
+        "*"                       # Allow all origins as fallback
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

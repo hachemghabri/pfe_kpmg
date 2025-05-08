@@ -1,27 +1,30 @@
-FROM node:16-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json (or yarn.lock)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies using legacy peer deps if needed
+RUN npm install --legacy-peer-deps
 
-# Install serve for production static file serving
-RUN npm install -g serve
-
-# Copy the rest of the code
+# Copy the rest of the application code
 COPY . .
 
-# Set the backend API URL for production
-ENV REACT_APP_API_URL=http://backend:8000
-
-# Build the app
+# Build the React application for production
+# Use NODE_OPTIONS to increase memory if needed
+# Set CI=false to treat warnings as non-errors during build
+ENV NODE_OPTIONS=--max_old_space_size=4096
+ENV CI=false
 RUN npm run build
 
-# Expose port
+# Install serve to run the static files
+RUN npm install -g serve
+
+# Expose the port the app will run on
 EXPOSE 80
 
-# Command to run the server using serve instead of nginx
+# Command to serve the build folder
+# -s indicates single-page application mode
+# -l specifies the listener port (maps to EXPOSE 80)
 CMD ["serve", "-s", "build", "-l", "80"] 
